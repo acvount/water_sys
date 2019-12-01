@@ -1,4 +1,5 @@
 import axios from 'axios'
+import Router from 'vue-router'
 import {
     Message,
     MessageBox,
@@ -14,8 +15,14 @@ request.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencod
 
 request.interceptors.response.use(
     response => {
-        const res = response.data
-        return res;
+        if (response.data.code == 6) {
+            localStorage.removeItem("Authorization");
+            localStorage.removeItem("userInfo");
+            location.reload()
+        } else {
+            const res = response.data
+            return res;
+        }
     },
     error => {
         console.log('err' + error)
@@ -24,7 +31,6 @@ request.interceptors.response.use(
             type: 'error',
             duration: 5 * 1000
         })
-        hideLoading();
         return Promise.reject(error)
     }
 )

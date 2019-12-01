@@ -1,18 +1,27 @@
-
+const webpack = require("webpack")
 
 module.exports = {
     lintOnSave: false,
-    publicPath:'./',
+    publicPath: './',
     devServer: {
         proxy: {
             '/api': {
-                target: 'http://127.0.0.1:9997',
-                ws: true,
+                target: `http://${process.env.VUE_APP_BASE_API}`,
+                // ws: true,
                 changeOrigin: true,
                 pathRewrite: {
                     '^/api': ''
                 }
-            }
+            },
         }
+    },
+    configureWebpack: {
+        plugins: [
+            new webpack.ProvidePlugin({
+                $: "jquery",
+                jQuery: "jquery",
+                "windows.jQuery": "jquery"
+            })
+        ]
     }
 }

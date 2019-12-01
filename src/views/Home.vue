@@ -1,18 +1,18 @@
 <template>
-  <div class="home">
-    <img alt="Vue logo" src="../assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
-  </div>
+  <div>首页</div>
 </template>
 
-<script>
-// @ is an alias to /src
-import HelloWorld from '@/components/HelloWorld.vue'
 
+<script>
 export default {
-  name: 'home',
-  components: {
-    HelloWorld
+  data() {
+    return {};
+  },
+  mounted() {
+    if (this.$socket.readyState === 1) {
+      this.$socket.send(JSON.stringify({ router: "home" }));
+    }
+    this.$socket.onmessage = data => console.log(data);
   }
-}
+};
 </script>
