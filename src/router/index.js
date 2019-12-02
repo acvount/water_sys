@@ -25,6 +25,21 @@ const router = new Router({
           component: () => import("@/views/Home"),
         },
         {
+          path: '/dayHis',
+          name: '按天查询',
+          component: () => import("@/views/History/day.vue"),
+        },
+        {
+          path: '/mouthHis',
+          name: '按月查寻',
+          component: () => import("@/views/History/month.vue"),
+        },
+        {
+          path: '/yearHis',
+          name: '按年查寻',
+          component: () => import("@/views/History/year.vue"),
+        },
+        {
           path: '/site',
           name: '站点管理',
           component: () => import("@/views/Site/index"),
