@@ -1,6 +1,7 @@
 <template>
   <div class="wa-site-view">
-    <el-tabs v-model="activeName" @tab-click="tabClick">
+    {{testData}}
+    <!-- <el-tabs v-model="activeName" @tab-click="tabClick">
       <el-tab-pane label="站点列表" name="sitelist">
         <el-form>
           <el-row :gutter="5">
@@ -133,7 +134,7 @@
         <el-button @click="editDialog = false">取 消</el-button>
         <el-button type="primary" @click="updateInfo()">确 定</el-button>
       </span>
-    </el-dialog>
+    </el-dialog>-->
   </div>
 </template>
 
@@ -154,7 +155,8 @@ export default {
         pageSize: 10,
         total: 0,
         pages: ""
-      }
+      },
+      testData: []
     };
   },
   computed: {
@@ -168,6 +170,10 @@ export default {
   },
   mounted() {
     this.initSiteData();
+    this.$websocket.getters.STAFF_UPDATE.onmessage = e => {
+      this.testData.push(JSON.parse(e.data));
+      console.log(JSON.parse(e.data));
+    };
   },
   methods: {
     handleSizeChange(val) {
