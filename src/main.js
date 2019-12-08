@@ -11,9 +11,9 @@ import request from '@/utils/request'
 import VueNativeSock from 'vue-native-websocket'
 
 Vue.use(ElementUI);
-Vue.use(VueNativeSock, `ws://${process.env.VUE_APP_BASE_API}/websocket/123`)
+// Vue.use(VueNativeSock, `ws://${process.env.VUE_APP_BASE_API}/websocket/123`)
 
-Vue.prototype.$socket = VueNativeSock;
+// Vue.prototype.$socket = VueNativeSock;
 Vue.prototype.api = api;
 Vue.prototype.$request = request;
 

@@ -1,6 +1,6 @@
 <template>
   <div class="wa-day-view">
-    <div class="switch-chart">
+     <div class="switch-chart">
       <el-switch
         v-model="switchS"
         width="46"
