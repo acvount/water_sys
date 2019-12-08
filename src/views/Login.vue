@@ -75,10 +75,11 @@ export default {
                 localStorage.setItem("Authorization", true);
                 localStorage.setItem("userInfo", JSON.stringify(res.data));
                 this.$router.push({ path: "/" });
-                if (this.$socket.readyState === 1) {
-                  this.$socket.send(JSON.stringify({ router: "login" }));
-                }
-                this.$socket.onmessage = data => console.log(data);
+                // if (this.$socket.readyState === 1) {
+                //   this.$socket.send(JSON.stringify({ router: "login" }));
+                // }
+                // this.$socket.onmessage = data => console.log(data);
+                this.$websocket.dispatch("WEBSOCKET_INIT");
               }
             })
             .catch(err => {

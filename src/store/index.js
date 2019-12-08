@@ -1,22 +1,42 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
 import { menus, filterMenus } from '@/utils/sideJson'
+import { stat } from 'fs';
 
 Vue.use(Vuex);
-
+const wsurl = "ws://192.168.18.4:9999/websocket/123"
 const store = new Vuex.Store({
   state: {
     options: [],
     activeIndex: '/home',
     userInfo: {},
-    side: []
+    side: [],
+    websock: null
   },
   actions: {
     add_side({ commit }, userInfo) {
       commit('add_side_user', userInfo.userType)
+      commit('WEBSOCKET_INIT', wsurl)
     },
+    WEBSOCKET_INIT({ commit }, url) {
+      commit('WEBSOCKET_INIT', wsurl)
+    }
   },
   mutations: {
+    WEBSOCKET_INIT(state, url) {
+      // state.websock = new WebSocket(url);
+      state.websock = new ReconnectingWebSocket(url);
+      state.debug = true;
+      state.timeoutInterval = 5400;
+      state.websock.onopen = function () {
+        console.log("连接成功！");
+      }
+      window.onbeforeunload = function () {
+        state.websock.send('游览器关闭')
+        alert("游览器关闭")
+        state.websock.close();
+      }
+    },
     add_side_user(state, role) {
       if (role == 1) {
         state.side = filterMenus(menus);
@@ -53,6 +73,7 @@ const store = new Vuex.Store({
   getters: {
     userinfo: (state) => state.userInfo,
     side: (state) => state.side,
+    STAFF_UPDATE: (state) => state.websock
   }
 });
 
