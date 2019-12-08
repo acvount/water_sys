@@ -10,6 +10,7 @@ export default {
             add: '/site/addSite',
             openSite: '/site/openTheSite',
             closeSite: '/site/closeTheSite',
+            equipment: '/equipment/getAll'
         },
         user: {
             get: '/userAdmin/getUsers',
@@ -19,5 +20,8 @@ export default {
             update: '/userAdmin/updateUserDetail',
             editpwd: '/userAdmin/randUserPassCode'
         }
+    },
+    history:{
+        day:'/history/queryOneDay'
     }
 }

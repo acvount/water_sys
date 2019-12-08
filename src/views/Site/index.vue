@@ -1,7 +1,6 @@
 <template>
   <div class="wa-site-view">
-    {{testData}}
-    <!-- <el-tabs v-model="activeName" @tab-click="tabClick">
+    <el-tabs v-model="activeName" @tab-click="tabClick">
       <el-tab-pane label="站点列表" name="sitelist">
         <el-form>
           <el-row :gutter="5">
@@ -9,17 +8,17 @@
               <el-form-item>
                 <el-input
                   clearable
-                  placeholder="请输入站点名称、编号、设备编号"
+                  placeholder="请输入站点名称、编号、设备名称"
                   size="small"
                   v-model="searchForm.name"
                 ></el-input>
               </el-form-item>
             </el-col>
-            <el-col :span="7">
+            <el-col :span="6">
               <el-form-item label="站点状态">
                 <el-select clearable size="small" v-model="searchForm.status">
-                  <el-option label="正常" value="0"></el-option>
-                  <el-option label="停用" value="1"></el-option>
+                  <el-option label="正常" value="1"></el-option>
+                  <el-option label="停用" value="0"></el-option>
                 </el-select>
               </el-form-item>
             </el-col>
@@ -34,7 +33,9 @@
           <el-table-column type="index" label="#" width="50" align="center"></el-table-column>
           <el-table-column prop="siteNo" label="站点编号" align="center"></el-table-column>
           <el-table-column prop="siteName" label="站点名称" align="center"></el-table-column>
-          <el-table-column prop="equipmentNo" label="设备编号" align="center"></el-table-column>
+          <el-table-column label="设备名称" align="center">
+            <template slot-scope="scope">{{scope.row.sensor}}</template>
+          </el-table-column>
           <el-table-column label="站点状态" align="center">
             <template slot-scope="scope">{{ scope.row.siteStatus == 0?'停用':'正常' }}</template>
           </el-table-column>
@@ -43,8 +44,13 @@
           <el-table-column label="操作" width="180" align="center">
             <template slot-scope="scope">
               <el-button @click="QueryClick(scope.row)" type="text" size="small">修改</el-button>
-              <el-button type="text" @click="UpdateTheSite(scope.row)" size="small">暂停</el-button>
-              <el-button type="text" @click="UpdateTheSite(scope.row)" size="small">激活</el-button>
+              <el-button
+                type="text"
+                v-if="scope.row.siteStatus == 1"
+                @click="UpdateTheSite(scope.row)"
+                size="small"
+              >暂停</el-button>
+              <el-button type="text" v-else @click="UpdateTheSite(scope.row)" size="small">激活</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -59,7 +65,7 @@
         ></el-pagination>
       </el-tab-pane>
       <el-tab-pane label="站点添加" name="siteadd">
-        <site-add ref="child"></site-add>
+        <site-add @initEquipment="initEquipment" :sensorList="sensorList" ref="child"></site-add>
       </el-tab-pane>
     </el-tabs>
 
@@ -103,24 +109,19 @@
           </el-col>
         </el-row>
         <el-row>
-          <el-col :span="12">
+          <!-- <el-col :span="12">
             <el-form-item label="设备编号">
               <el-input disabled v-model="rowForm.equipmentNo" size="small"></el-input>
             </el-form-item>
-          </el-col>
+          </el-col>-->
           <el-col :span="12">
             <el-form-item label="站点地区">
               <el-input disabled v-model="rowForm.address" size="small"></el-input>
             </el-form-item>
           </el-col>
-        </el-row>
-        <el-row>
           <el-col :span="12">
             <el-form-item label="传感器" size="small">
-              <el-select style="width:100%;" v-model="rowForm.sensor" placeholder="请选择传感器">
-                <el-option label="1" value="1"></el-option>
-                <el-option label="2" value="2"></el-option>
-              </el-select>
+              <el-input disabled v-model="rowForm.sensor" size="small"></el-input>
             </el-form-item>
           </el-col>
         </el-row>
@@ -134,7 +135,7 @@
         <el-button @click="editDialog = false">取 消</el-button>
         <el-button type="primary" @click="updateInfo()">确 定</el-button>
       </span>
-    </el-dialog>-->
+    </el-dialog>
   </div>
 </template>
 
@@ -143,6 +144,7 @@ import SiteAdd from "@/views/Site/add.vue";
 export default {
   data() {
     return {
+      sensorList: [], //设备编号
       editDialog: false,
       activeName: "sitelist",
       loading: false,
@@ -170,10 +172,7 @@ export default {
   },
   mounted() {
     this.initSiteData();
-    this.$websocket.getters.STAFF_UPDATE.onmessage = e => {
-      this.testData.push(JSON.parse(e.data));
-      console.log(JSON.parse(e.data));
-    };
+    this.initEquipment();
   },
   methods: {
     handleSizeChange(val) {
@@ -240,6 +239,19 @@ export default {
           this.searchForm.total = res.data.total;
           this.tableData = res.data.list;
           this.loading = false;
+        }
+      });
+    },
+    initEquipment() {
+      this.sensorList = [];
+      //设备编号
+      this.$request.post(this.api.sys.site.equipment).then(res => {
+        if (res.code == 1) {
+          res.data.forEach(element => {
+            this.sensorList.push({ label: element.sname, value: element.id });
+          });
+        } else {
+          this.$message.error("查询失败");
         }
       });
     }

@@ -100,7 +100,16 @@ export default {
             "20:00",
             "21:00",
             "22:00",
-            "23:00"
+            "23:00",
+            "24:00",
+            "25:00",
+            "26:00",
+            "27:00",
+            "28:00",
+            "29:00",
+            "30:00",
+            "31:00",
+            "32:00",
           ],
           boundaryGap: false
         },
@@ -167,6 +176,9 @@ export default {
 </script>
 
 <style lang="scss">
+.content-wrap {
+  overflow: hidden;
+}
 .wa-home-view {
   padding: 10px;
   // font-size: 30px;

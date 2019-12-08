@@ -3,8 +3,8 @@ import Vuex from 'vuex';
 import { menus, filterMenus } from '@/utils/sideJson'
 import { stat } from 'fs';
 
-Vue.use(Vuex);
-const wsurl = "ws://192.168.18.4:9999/websocket/123"
+Vue.use(Vuex);  
+const wsurl = "ws://192.168.18.4:9999/websocket"
 const store = new Vuex.Store({
   state: {
     options: [],
@@ -24,6 +24,10 @@ const store = new Vuex.Store({
   },
   mutations: {
     WEBSOCKET_INIT(state, url) {
+      // this.$websocket.getters.STAFF_UPDATE.onmessage = e => {
+      //   this.testData.push(JSON.parse(e.data));
+      //   console.log(JSON.parse(e.data));
+      // };
       // state.websock = new WebSocket(url);
       state.websock = new ReconnectingWebSocket(url);
       state.debug = true;

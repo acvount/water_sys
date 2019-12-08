@@ -162,7 +162,7 @@ body {
       .content-wrap {
         width: 100%;
         height: calc(100vh - 120px);
-        // overflow-y: auto;
+        overflow-y: auto;
         border: 1px solid #d1dbe5;
         border-top: none;
       }

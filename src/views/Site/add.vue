@@ -37,16 +37,17 @@
           <el-input v-model="MapPlace" size="small" :disabled="true" placeholder="当前位置经纬度"></el-input>
         </el-col>
       </el-form-item>
-      <el-form-item label="设备编号" prop="equipmentNo">
+      <!-- <el-form-item label="设备编号" prop="equipmentNo">
         <el-col :span="23">
           <el-input v-model="siteForm.data.equipmentNo" size="small"></el-input>
         </el-col>
-      </el-form-item>
+      </el-form-item>-->
       <el-form-item label="站点地区" prop="address">
         <el-col :span="23">
           <el-cascader
             style="width:100%;"
             size="small"
+            clearablex
             @change="cityChange"
             :options="options"
             v-model="addressArr"
@@ -55,19 +56,33 @@
       </el-form-item>
       <el-form-item label="站点地址">
         <el-col :span="23">
-          <el-input size="small" placeholder="详细地址" type="textarea" v-model="siteForm.data.siteAddress"></el-input>
+          <el-input
+            size="small"
+            placeholder="详细地址"
+            type="textarea"
+            v-model="siteForm.data.siteAddress"
+          ></el-input>
         </el-col>
       </el-form-item>
-      <el-form-item label="传感器" size="small" prop="sensor">
+      <el-form-item label="传感器" size="small" prop="equipmentNo">
         <el-col :span="23">
-          <el-select style="width:100%;" v-model="siteForm.data.sensor" placeholder="请选择传感器">
-            <el-option label="1" value="1"></el-option>
-            <el-option label="2" value="2"></el-option>
+          <el-select
+            style="width:100%;"
+            clearable
+            v-model="siteForm.data.equipmentNo"
+            placeholder="请选择传感器"
+          >
+            <el-option
+              v-for="(item,index) in sensorList"
+              :label="item.label"
+              :value="item.value"
+              :key="index"
+            ></el-option>
           </el-select>
         </el-col>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" size="small" @click="submitForm()">保存站点</el-button>
+        <el-button type="primary" size="small" @click="submitForm()" :loading="loading">保存站点</el-button>
         <el-button size="small" @click="resetForm()">重置</el-button>
       </el-form-item>
     </el-form>
@@ -90,12 +105,13 @@ import { regionData, CodeToText } from "element-china-area-data";
 export default {
   data() {
     return {
+      loading: false,
       options: regionData,
       siteAddMap: "", //当前地图对象
       siteAddGeo: "", //根据位置找经纬度对象
       searchVal: "",
       addressArr: [],
-      map:'', //地图对象
+      map: "", //地图对象
       siteForm: {
         data: {
           siteName: "", // 站点名称
@@ -107,8 +123,8 @@ export default {
           latitude: "", //纬度
           equipmentNo: "", //设备编号
           siteAddress: "", //站点地址
-          address: "", //地区三级
-          sensor: "" //传感器名称
+          address: "" //地区三级
+          // sensor: "" //传感器名称
         },
         rules: {
           siteName: [
@@ -133,18 +149,16 @@ export default {
             { required: true, message: "请输入设备厂商", trigger: "blur" }
           ],
           equipmentNo: [
-            { required: true, message: "请输入设备编号", trigger: "blur" }
+            { required: true, message: "请选择传感器名称", trigger: "blur" }
           ],
           address: [
             { required: true, message: "请选择地区", trigger: "change" }
-          ],
-          sensor: [
-            { required: true, message: "请选择传感器名称", trigger: "change" }
           ]
         }
       }
     };
   },
+  props: ["sensorList"],
   computed: {
     //经纬度
     MapPlace() {
@@ -154,22 +168,29 @@ export default {
   methods: {
     resetForm() {
       this.$refs["siteForm"].resetFields();
-      this.siteForm.data.siteAddress = '';
+      this.siteForm.data.siteAddress = "";
+      this.siteForm.data.longitude = "";
+      this.siteForm.data.latitude = "";
       this.addressArr = [];
     },
     submitForm() {
       this.$refs["siteForm"].validate(valid => {
         if (valid) {
+          this.loading = true;
           this.$request
             .post(this.api.sys.site.add, this.siteForm.data)
             .then(res => {
               if (res.code == 1) {
                 this.$message.success("站点添加成功");
                 this.resetForm();
-                
               } else {
-                this.$message.success("站点添加失败");
+                this.$message.error(res.msg);
               }
+              this.$emit("initEquipment");
+              this.loading = false;
+            })
+            .catch(err => {
+              this.loading = false;
             });
         }
       });
@@ -195,7 +216,7 @@ export default {
     },
     initMap() {
       var _this = this;
-      this.map  = new BMap.Map("siteAddMap", { enableMapClick: false });
+      this.map = new BMap.Map("siteAddMap", { enableMapClick: false });
       var map = this.map;
       var myGeo = new BMap.Geocoder();
 

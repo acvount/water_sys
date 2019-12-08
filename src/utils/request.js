@@ -16,7 +16,6 @@ request.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencod
 request.interceptors.response.use(
     response => {
         if (response.data.code == 6) {
-            alert(123)
             localStorage.removeItem("Authorization");
             localStorage.removeItem("userInfo");
             location.reload()
