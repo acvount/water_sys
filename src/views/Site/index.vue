@@ -14,7 +14,7 @@
                 ></el-input>
               </el-form-item>
             </el-col>
-            <el-col :span="6">
+            <el-col :span="7">
               <el-form-item label="站点状态">
                 <el-select clearable size="small" v-model="searchForm.status">
                   <el-option label="正常" value="1"></el-option>
