@@ -12,31 +12,50 @@
     <template v-if="switchS">
       <el-form :inline="true" class="serch-form">
         <el-form-item label="站点编号">
-          <el-input size="mini" clearable></el-input>
+          <el-input v-model="searchForm.siteNo" size="mini" clearable></el-input>
         </el-form-item>
         <el-form-item label="站点名称">
-          <el-input size="mini" clearable></el-input>
+          <el-input v-model="searchForm.siteName" size="mini" clearable></el-input>
+        </el-form-item>
+        <el-form-item label="设备编号">
+          <el-input v-model="searchForm.sensor" size="mini" clearable></el-input>
         </el-form-item>
         <el-form-item label="设备状态">
-          <el-select size="mini" clearable>
-            <el-option label="正常" value="0"></el-option>
-            <el-option label="异常" value="1"></el-option>
+          <el-select size="mini" clearable v-model="searchForm.sensorStatus">
+            <el-option label="正常" value="1"></el-option>
+            <el-option label="异常" value="0"></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="数据状态">
+        <!-- <el-form-item label="数据状态">
           <el-select size="mini" clearable>
             <el-option label="区域一" value="shanghai"></el-option>
             <el-option label="区域二" value="beijing"></el-option>
           </el-select>
-        </el-form-item>
+        </el-form-item>-->
         <el-form-item label="选择日期">
-          <el-date-picker type="date" size="mini" style="width:200px"></el-date-picker>
+          <el-date-picker
+            v-model="searchForm.dayTime"
+            value-format="yyyy-MM-dd"
+            type="date"
+            size="mini"
+            style="width:200px"
+          ></el-date-picker>
         </el-form-item>
-        <el-form-item label="选择日期">
-          <el-time-picker size="mini" style="width:200px"></el-time-picker>
+        <el-form-item label="选择时间段">
+          <el-time-picker
+            style="width:200px;"
+            is-range
+            size="mini"
+            v-model="Times"
+            range-separator="至"
+            start-placeholder="开始时间"
+            end-placeholder="结束时间"
+            placeholder="选择时间范围"
+            value-format="HH:mm:ss"
+          ></el-time-picker>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" size="mini">查询</el-button>
+          <el-button type="primary" size="mini" @click="initData()">查询</el-button>
         </el-form-item>
       </el-form>
       <el-table :data="tableData" style="width: 100%" :loading="loading">
@@ -47,7 +66,7 @@
         <el-table-column align="center" label="设备状态"></el-table-column>
         <el-table-column align="center" label="数据状态" prop="dateAvg"></el-table-column>
         <el-table-column align="center" label="当日总量" prop="countDate"></el-table-column>
-        <el-table-column align="center" label="采集时间" prop="lastPushTime"></el-table-column>
+        <el-table-column align="center" label="最后采集时间" width="150" prop="lastPushTime"></el-table-column>
       </el-table>
       <el-pagination
         @size-change="handleSizeChange"
@@ -72,15 +91,24 @@ export default {
       loading: false,
       myChart: null,
       tableData: [],
+      Times: null,
       searchForm: {
+        dayTime: "",
         pageNo: 0,
         pageSize: 10,
-        name: ""
+        siteNo: "",
+        siteName: "",
+        sensor: "",
+        beginTime: "",
+        endTime: ""
       }
     };
   },
   mounted() {
     this.initData();
+    // this.$nextTick(() => {
+    //   this.initCharts();
+    // });
   },
   methods: {
     handleSizeChange(val) {
@@ -93,6 +121,31 @@ export default {
     },
     initData() {
       this.loading = true;
+      // if (this.Times != null && this.searchForm.dayTime != "") {
+      //   this.searchForm.beginTime =
+      //     this.searchForm.dayTime + " " + this.Times[0];
+      //   this.searchForm.endTime = this.searchForm.dayTime + " " + this.Times[1];
+      // } else {
+      //   if (this.searchForm.dayTime != "") {
+      //     this.searchForm.beginTime = `${this.searchForm.dayTime} 00:00:00`;
+      //     this.searchForm.endTime = `${this.searchForm.dayTime} 23:59:59`;
+      //   }
+      // }
+      if (
+        this.searchForm.dayTime != "" &&
+        this.searchForm.dayTime != null &&
+        this.Times != null
+      ) {
+        this.searchForm.beginTime =
+          this.searchForm.dayTime + " " + this.Times[0];
+        this.searchForm.endTime = this.searchForm.dayTime + " " + this.Times[1];
+      } else if (this.searchForm.dayTime != "" && this.Times == null) {
+        this.searchForm.beginTime = `${this.searchForm.dayTime} 00:00:00`;
+        this.searchForm.endTime = `${this.searchForm.dayTime} 23:59:59`;
+      } else if (this.Times != null && this.searchForm.dayTime == "") {
+        this.$message.warning("请选择日期");
+        return;
+      }
       this.$request.post(this.api.history.day, this.searchForm).then(res => {
         if (res.code == 1) {
           this.searchForm.pageNo = res.data.pageNum;
@@ -109,10 +162,16 @@ export default {
       let DayCharts = document.getElementById("DayCharts");
       DayCharts.style.width = this.$refs.waDayView.offsetWidth - 30 + "px";
       this.myChart = echarts.init(DayCharts);
+      let XData = [];
+      let YData = [];
+      this.tableData.forEach(item => {
+        XData.push(item.siteName);
+        YData.push(item.countDate);
+      });
       let option = {
         xAxis: {
           type: "category",
-          data: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+          data: XData
         },
         grid: {
           left: 20,
@@ -126,7 +185,7 @@ export default {
         },
         series: [
           {
-            data: [120, 200, 150, 80, 70, 110, 130],
+            data: YData,
             type: "bar"
           }
         ]
