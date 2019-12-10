@@ -55,10 +55,10 @@
           ></el-time-picker>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" size="mini" @click="initData()">查询</el-button>
+          <el-button type="primary" size="mini" @click="QueryHandle()">查询</el-button>
         </el-form-item>
       </el-form>
-      <el-table :data="tableData" style="width: 100%" :loading="loading">
+      <el-table :data="tableData" style="width: 100%" v-loading="loading">
         <el-table-column align="center" label="#" type="index" width="80"></el-table-column>
         <el-table-column align="center" label="站点编号" prop="siteNo"></el-table-column>
         <el-table-column align="center" label="站点名称" prop="siteName"></el-table-column>
@@ -66,7 +66,7 @@
         <el-table-column align="center" label="设备状态"></el-table-column>
         <el-table-column align="center" label="数据状态" prop="dateAvg"></el-table-column>
         <el-table-column align="center" label="当日总量" prop="countDate"></el-table-column>
-        <el-table-column align="center" label="最后采集时间" width="150" prop="lastPushTime"></el-table-column>
+        <el-table-column align="center" label="最后采集时间" width="160" prop="lastPushTime"></el-table-column>
       </el-table>
       <el-pagination
         @size-change="handleSizeChange"
@@ -119,33 +119,29 @@ export default {
       this.searchForm.pageNo = val;
       this.initData();
     },
-    initData() {
-      this.loading = true;
-      // if (this.Times != null && this.searchForm.dayTime != "") {
-      //   this.searchForm.beginTime =
-      //     this.searchForm.dayTime + " " + this.Times[0];
-      //   this.searchForm.endTime = this.searchForm.dayTime + " " + this.Times[1];
-      // } else {
-      //   if (this.searchForm.dayTime != "") {
-      //     this.searchForm.beginTime = `${this.searchForm.dayTime} 00:00:00`;
-      //     this.searchForm.endTime = `${this.searchForm.dayTime} 23:59:59`;
-      //   }
-      // }
-      if (
-        this.searchForm.dayTime != "" &&
-        this.searchForm.dayTime != null &&
-        this.Times != null
-      ) {
-        this.searchForm.beginTime =
-          this.searchForm.dayTime + " " + this.Times[0];
-        this.searchForm.endTime = this.searchForm.dayTime + " " + this.Times[1];
+    QueryHandle() {
+      if (this.searchForm.dayTime == null) {
+        this.searchForm.dayTime = "";
+      }
+      if (this.searchForm.dayTime == "" && this.Times == null) {
+        this.searchForm.beginTime = "";
+        this.searchForm.endTime = "";
+      } else if (this.searchForm.dayTime != "" && this.Times != null) {
+        this.searchForm.beginTime = `${this.searchForm.dayTime} ${
+          this.Times[0]
+        }`;
+        this.searchForm.endTime = `${this.searchForm.dayTime} ${this.Times[1]}`;
       } else if (this.searchForm.dayTime != "" && this.Times == null) {
         this.searchForm.beginTime = `${this.searchForm.dayTime} 00:00:00`;
         this.searchForm.endTime = `${this.searchForm.dayTime} 23:59:59`;
-      } else if (this.Times != null && this.searchForm.dayTime == "") {
+      } else if (this.searchForm.dayTime == "" && this.Times != null) {
         this.$message.warning("请选择日期");
-        return;
+        return false;
       }
+      this.initData();
+    },
+    initData() {
+      this.loading = true;
       this.$request.post(this.api.history.day, this.searchForm).then(res => {
         if (res.code == 1) {
           this.searchForm.pageNo = res.data.pageNum;
