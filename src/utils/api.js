@@ -21,7 +21,8 @@ export default {
             editpwd: '/userAdmin/randUserPassCode'
         }
     },
-    history:{
-        day:'/history/queryOneDay'
+    history: {
+        day: '/history/queryOneDay',
+        details: '/history/queryDetail'
     }
 }

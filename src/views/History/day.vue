@@ -67,6 +67,11 @@
         <el-table-column align="center" label="数据状态" prop="dateAvg"></el-table-column>
         <el-table-column align="center" label="当日总量" prop="countDate"></el-table-column>
         <el-table-column align="center" label="最后采集时间" width="160" prop="lastPushTime"></el-table-column>
+        <el-table-column align="center" label="操作" width="160">
+          <template slot-scope="scope">
+            <el-button type="text" @click="detaial(scope.row)">单点查询</el-button>
+          </template>
+        </el-table-column>
       </el-table>
       <el-pagination
         @size-change="handleSizeChange"
@@ -111,6 +116,18 @@ export default {
     // });
   },
   methods: {
+    detaial(row) {
+      console.log(this.api.history.details)
+      this.$request
+        .post(this.api.history.details, {
+          eName: row.ename,
+          beginTime: "2019-12-01 00:00:00",
+          endTime: "2019-12-31 00:00:00"
+        })
+        .then(res => {
+          console.log(res);
+        });
+    },
     handleSizeChange(val) {
       this.searchForm.pageSize = val;
       this.initData();

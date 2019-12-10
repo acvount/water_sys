@@ -25,7 +25,11 @@
           </el-tabs>
         </div>
         <div class="content-wrap">
-          <router-view />
+          <transition name="fade" mode="out-in">
+            <keep-alive>
+              <router-view />
+            </keep-alive>
+          </transition>
         </div>
       </div>
     </div>
@@ -121,6 +125,14 @@ export default {
 </script>
 
 <style lang="scss">
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s;
+}
+.fade-enter,
+.fade-leave-active {
+  opacity: 0;
+}
 html,
 body {
   overflow: hidden;
