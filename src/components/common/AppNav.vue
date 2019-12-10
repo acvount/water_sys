@@ -61,6 +61,11 @@ export default {
       }
     }
   },
+  watch:{
+    isCollapse(newval,oldval){
+      this.$store.commit('Edit_Collapse',newval)
+    }
+  },
   computed: {
     ...mapGetters({ menus: "side" }),
     options() {

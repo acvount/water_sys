@@ -83,22 +83,50 @@
         :total="searchForm.total"
       ></el-pagination>
     </template>
-    <div v-show="!switchS" id="DayCharts" style="width:100%;height:calc(100vh - 270px);"></div>
+    <div
+      v-show="!switchS"
+      id="DayCharts"
+      ref="DayCharts"
+      :style="{width: '100%'}"
+      style="height:calc(100vh - 270px);border:1px red solid;"
+    ></div>
+
+    <el-dialog
+      title="数据推送详情"
+      :close-on-press-escape="false"
+      :close-on-click-modal="false"
+      :visible.sync="dialogVisible"
+      width="60%"
+    >
+      <el-table :data="detaialData">
+        <el-table-column prop="sname" label="设备一" width="150"></el-table-column>
+        <el-table-column prop="svalue" label="当时流速"></el-table-column>
+        <el-table-column prop="hname" label="设备二" width="200"></el-table-column>
+        <el-table-column prop="hvalue" label="水位高度"></el-table-column>
+      </el-table>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="dialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
 <script>
 import echarts from "echarts";
+import { mapGetters } from "vuex";
 export default {
   data() {
     return {
+      dialogVisible: false,
       switchS: true,
       loading: false,
       myChart: null,
       tableData: [],
+      detaialData: [],
       Times: null,
       searchForm: {
-        dayTime: "",
+        dayTime: new Date(),
         pageNo: 0,
         pageSize: 10,
         siteNo: "",
@@ -117,15 +145,17 @@ export default {
   },
   methods: {
     detaial(row) {
-      console.log(this.api.history.details)
       this.$request
         .post(this.api.history.details, {
           eName: row.ename,
-          beginTime: "2019-12-01 00:00:00",
-          endTime: "2019-12-31 00:00:00"
+          beginTime: this.searchForm.beginTime,
+          endTime: this.searchForm.endTime
         })
         .then(res => {
-          console.log(res);
+          if (res.code == 1) {
+            this.detaialData = res.data;
+            this.dialogVisible = true;
+          }
         });
     },
     handleSizeChange(val) {
@@ -172,9 +202,13 @@ export default {
       });
     },
     initCharts() {
+      // DayCharts.style.width = "500px"
       let DayCharts = document.getElementById("DayCharts");
-      DayCharts.style.width = this.$refs.waDayView.offsetWidth - 30 + "px";
-      this.myChart = echarts.init(DayCharts);
+      // DayCharts.style.width = this.$refs.waDayView.offsetWidth - 30 + "px";
+      var _myChart = echarts.init(this.$refs.DayCharts);
+      window.resize = _myChart.resize();
+
+      this.myChart = _myChart;
       let XData = [];
       let YData = [];
       this.tableData.forEach(item => {
@@ -208,12 +242,16 @@ export default {
         var name = param.name;
         console.log(name);
       });
-      window.addEventListener("resize", () => {
-        this.myChart.resize();
-      });
     }
   },
+  computed: {
+    ...mapGetters({ IS_COLLAPSE: "IS_COLLAPSE" })
+  },
   watch: {
+    IS_COLLAPSE() {
+      console.log(12)
+      this.initCharts();
+    },
     switchS(val) {
       if (!val) {
         this.initCharts();

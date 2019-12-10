@@ -11,6 +11,7 @@ const store = new Vuex.Store({
     activeIndex: '/home',
     userInfo: {},
     side: [],
+    isCollapse:false,
     websock: null
   },
   actions: {
@@ -21,8 +22,12 @@ const store = new Vuex.Store({
     WEBSOCKET_INIT({ commit }, url) {
       commit('WEBSOCKET_INIT', wsurl)
     }
+
   },
   mutations: {
+    Edit_Collapse(state,val){
+      state.isCollapse = val;
+    },
     WEBSOCKET_INIT(state, url) {
       // this.$websocket.getters.STAFF_UPDATE.onmessage = e => {
       //   this.testData.push(JSON.parse(e.data));
@@ -77,6 +82,7 @@ const store = new Vuex.Store({
   getters: {
     userinfo: (state) => state.userInfo,
     side: (state) => state.side,
+    IS_COLLAPSE: (state) => state.isCollapse,
     STAFF_UPDATE: (state) => state.websock
   }
 });

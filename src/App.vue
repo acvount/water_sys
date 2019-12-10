@@ -6,7 +6,17 @@
 
 <script>
 export default {
-  mounted() {}
+  mounted() {
+    var userAgent = navigator.userAgent;
+    if (userAgent.indexOf("Chrome") == -1) {
+      this.$notify({
+        title: "提示",
+        message: "为了良好的兼容性，请使用Chrome游览器",
+        type: "warning",
+        duration: 7000
+      });
+    }
+  }
 };
 </script>
 
