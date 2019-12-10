@@ -81,9 +81,6 @@ export default {
   },
   mounted() {
     this.initData();
-    this.$nextTick(() => {
-      this.initCharts();
-    });
   },
   methods: {
     handleSizeChange(val) {
@@ -110,8 +107,7 @@ export default {
     },
     initCharts() {
       let DayCharts = document.getElementById("DayCharts");
-      DayCharts.style.width = this.$refs.waDayView.clientWidth - 30 + "px";
-      DayCharts.style.border = "1px red solid";
+      DayCharts.style.width = this.$refs.waDayView.offsetWidth - 30 + "px";
       this.myChart = echarts.init(DayCharts);
       let option = {
         xAxis: {
@@ -136,6 +132,10 @@ export default {
         ]
       };
       this.myChart.setOption(option);
+      this.myChart.on("click", function(param) {
+        var name = param.name;
+        console.log(name);
+      });
       window.addEventListener("resize", () => {
         this.myChart.resize();
       });
