@@ -2,6 +2,7 @@ import Vue from 'vue'
 import App from './App.vue'
 import router from './router'
 import ElementUI from 'element-ui';
+import ElSearchTablePagination from 'el-table-pagination'
 import 'element-ui/lib/theme-chalk/index.css';
 import store from '@/store/index';
 import './assets/custom.scss';
@@ -10,6 +11,7 @@ import api from "@/utils/api"
 import request from '@/utils/request'
 
 Vue.use(ElementUI);
+Vue.use(ElSearchTablePagination)
 
 Vue.prototype.api = api;
 Vue.prototype.$request = request;

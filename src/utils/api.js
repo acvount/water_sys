@@ -24,5 +24,8 @@ export default {
     history: {
         day: '/history/queryOneDay',
         details: '/history/queryDetail'
+    },
+    map: {
+        getAll: '/map/getAll'
     }
 }

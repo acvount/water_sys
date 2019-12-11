@@ -83,13 +83,7 @@
         :total="searchForm.total"
       ></el-pagination>
     </template>
-    <div
-      v-show="!switchS"
-      id="DayCharts"
-      ref="DayCharts"
-      :style="{width: '100%'}"
-      style="height:calc(100vh - 270px);border:1px red solid;"
-    ></div>
+    <div v-if="!switchS" id="DayCharts" ref="DayCharts" style="height:calc(100vh - 270px);"></div>
 
     <el-dialog
       title="数据推送详情"
@@ -98,12 +92,16 @@
       :visible.sync="dialogVisible"
       width="60%"
     >
-      <el-table :data="detaialData">
-        <el-table-column prop="sname" label="设备一" width="150"></el-table-column>
-        <el-table-column prop="svalue" label="当时流速"></el-table-column>
-        <el-table-column prop="hname" label="设备二" width="200"></el-table-column>
-        <el-table-column prop="hvalue" label="水位高度"></el-table-column>
+      <div style="display:flex;justify-content: flex-end;">
+        <el-switch v-model="detaialSwitch" inactive-color="#ccc"></el-switch>
+      </div>
+      <el-table v-if="detaialSwitch" :data="detaialData" height="300">
+        <el-table-column align="center" prop="sname" label="设备一" width="150"></el-table-column>
+        <el-table-column align="center" prop="svalue" label="当时流速"></el-table-column>
+        <el-table-column align="center" prop="hname" label="设备二" width="200"></el-table-column>
+        <el-table-column align="center" prop="hvalue" label="水位高度"></el-table-column>
       </el-table>
+      <component v-else :is="'line-chart'" :chart-data="detaialData" />
       <span slot="footer" class="dialog-footer">
         <el-button @click="dialogVisible = false">取 消</el-button>
         <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
@@ -114,10 +112,15 @@
 
 <script>
 import echarts from "echarts";
+import LineChart from "@/components/Echarts/Line";
 import { mapGetters } from "vuex";
 export default {
+  components: {
+    LineChart
+  },
   data() {
     return {
+      detaialSwitch: false,
       dialogVisible: false,
       switchS: true,
       loading: false,
@@ -139,9 +142,9 @@ export default {
   },
   mounted() {
     this.initData();
-    // this.$nextTick(() => {
-    //   this.initCharts();
-    // });
+  },
+  beforeDestroy() {
+    thiss.removeChart();
   },
   methods: {
     detaial(row) {
@@ -153,6 +156,7 @@ export default {
         })
         .then(res => {
           if (res.code == 1) {
+            this.detaialSwitch = false;
             this.detaialData = res.data;
             this.dialogVisible = true;
           }
@@ -202,19 +206,15 @@ export default {
       });
     },
     initCharts() {
-      // DayCharts.style.width = "500px"
-      let DayCharts = document.getElementById("DayCharts");
       // DayCharts.style.width = this.$refs.waDayView.offsetWidth - 30 + "px";
-      var _myChart = echarts.init(this.$refs.DayCharts);
-      window.resize = _myChart.resize();
-
-      this.myChart = _myChart;
+      this.myChart = echarts.init(this.$refs.DayCharts);
       let XData = [];
       let YData = [];
       this.tableData.forEach(item => {
         XData.push(item.siteName);
         YData.push(item.countDate);
       });
+
       let option = {
         xAxis: {
           type: "category",
@@ -238,23 +238,45 @@ export default {
         ]
       };
       this.myChart.setOption(option);
-      this.myChart.on("click", function(param) {
-        var name = param.name;
-        console.log(name);
-      });
+      // this.myChart.on("click", function(param) {
+      //   var name = param.name;
+      //   console.log(name);
+      // });
+
+      window.onresize = () => {
+        if (this.myChart) {
+          this.myChart.resize();
+        }
+      };
+    },
+    removeChart(type) {
+      if (!this.myChart) {
+        return;
+      }
+      this.myChart.dispose(); // 销毁echarts
+      this.myChart = null;
+      if (type === "reset") {
+        this.initCharts();
+      }
     }
   },
+
   computed: {
     ...mapGetters({ IS_COLLAPSE: "IS_COLLAPSE" })
   },
   watch: {
     IS_COLLAPSE() {
-      console.log(12)
-      this.initCharts();
+      setTimeout(() => {
+        if (this.myChart) {
+          this.myChart.resize();
+        }
+      }, 300);
     },
     switchS(val) {
       if (!val) {
-        this.initCharts();
+        this.$nextTick(() => {
+          this.initCharts();
+        });
       }
     }
   }

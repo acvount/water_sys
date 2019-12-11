@@ -1,8 +1,5 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import Template from '@/components/Template'
-import ElementTable from '@/components/ElementTable'
-import DetailInfo from '@/components/DetailInfo'
 import store from '@/store/index.js'
 Vue.use(Router)
 

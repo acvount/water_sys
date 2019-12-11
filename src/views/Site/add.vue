@@ -12,11 +12,11 @@
           <el-input v-model="siteForm.data.siteName" size="small"></el-input>
         </el-col>
       </el-form-item>
-      <el-form-item label="站点编号" prop="siteNo">
+      <!-- <el-form-item label="站点编号" prop="siteNo">
         <el-col :span="23">
           <el-input v-model="siteForm.data.siteNo" size="small"></el-input>
         </el-col>
-      </el-form-item>
+      </el-form-item> -->
       <el-form-item label="联系人" prop="contactNick">
         <el-col :span="23">
           <el-input v-model="siteForm.data.contactNick" size="small"></el-input>
@@ -200,20 +200,7 @@ export default {
         CodeToText[this.addressArr[1]]
       }/${CodeToText[this.addressArr[2]]}`;
     },
-    searchMap() {
-      this.siteAddGeo.getPoint(
-        this.searchVal,
-        point => {
-          this.siteAddMap.centerAndZoom(this.searchVal, 11);
-          if (point) {
-            this.siteForm.data.longitude = point.lng;
-            this.siteForm.data.latitude = point.lat;
-            moveOverlay(point);
-          }
-        },
-        "全国"
-      );
-    },
+ 
     initMap() {
       var _this = this;
       this.map = new BMap.Map("siteAddMap", { enableMapClick: false });

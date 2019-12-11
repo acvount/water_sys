@@ -23,11 +23,16 @@ export default {
 <style >
 html,
 body {
-  overflow: hidden;
   margin: 0;
   padding: 0;
   height: 100%;
   width: 100%;
+  font-family: "Microsoft Yahei", "宋体", "Helvetica Neue", "Helvetica",
+    "Hiragino Sans GB", "WenQuanYi Micro Hei", "sans-serif";
+  font-size: 14px;
+  height: 100%;
+  overflow: hidden;
+  color: #666;
 }
 #app {
   font-family: "Avenir", Helvetica, Arial, sans-serif;
