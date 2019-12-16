@@ -16,7 +16,7 @@
         <el-col :span="23">
           <el-input v-model="siteForm.data.siteNo" size="small"></el-input>
         </el-col>
-      </el-form-item> -->
+      </el-form-item>-->
       <el-form-item label="联系人" prop="contactNick">
         <el-col :span="23">
           <el-input v-model="siteForm.data.contactNick" size="small"></el-input>
@@ -172,6 +172,8 @@ export default {
       this.siteForm.data.longitude = "";
       this.siteForm.data.latitude = "";
       this.addressArr = [];
+      this.map.clearOverlays();
+      this.searchVal = "";
     },
     submitForm() {
       this.$refs["siteForm"].validate(valid => {
@@ -200,7 +202,7 @@ export default {
         CodeToText[this.addressArr[1]]
       }/${CodeToText[this.addressArr[2]]}`;
     },
- 
+
     initMap() {
       var _this = this;
       this.map = new BMap.Map("siteAddMap", { enableMapClick: false });

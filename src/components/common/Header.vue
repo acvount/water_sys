@@ -3,8 +3,8 @@
     <div class="app-header">
       <div class="title">
         <img src="../../assets/images/logo-white.png" />
-        <!-- <span>水资源智能管理云平台</span> -->
-        <span>后台管理系统</span>
+        <span>水资源智能管理云平台</span>
+        <!-- <span>后台管理系统</span> -->
       </div>
       <div class="userBox">
         <span type="primary" @click.prevent.stop="userInfoShow=!userInfoShow">
@@ -73,7 +73,8 @@ export default {
         value.length >= 6 &&
         value.length <= 25 &&
         // /^(?=.*[a-zA-Z]+)(?=.*[0-9]+)[a-zA-Z0-9]+$/.test(value)
-        /^(?![0-9]+$)(?![a-z]+$)(?![A-Z]+$)(?!([^(0-9a-zA-Z)])+$).{6,}$/.test(value)
+        // /^(?![0-9]+$)(?![a-z]+$)(?![A-Z]+$)(?!([^(0-9a-zA-Z)])+$).{6,}$/.test(value)
+        /(?!^[0-9]+$)(?!^[A-z]+$)(?!^[^A-z0-9]+$)^[^\s\u4e00-\u9fa5]{6,20}$/.test(value)
       ) {
         callback();
       } else {

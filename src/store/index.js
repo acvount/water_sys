@@ -4,7 +4,8 @@ import { menus, filterMenus } from '@/utils/sideJson'
 import { stat } from 'fs';
 
 Vue.use(Vuex);  
-const wsurl = "ws://192.168.18.4:9999/websocket"
+// const wsurl = "ws://192.168.18.4:9999/websocket"
+const wsurl = "ws://127.0.0.1:9999/websocket"
 const store = new Vuex.Store({
   state: {
     options: [],

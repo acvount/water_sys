@@ -1,6 +1,6 @@
 <template>
   <div class="wa-home-view">
-    <el-row :gutter="24" class="count-to">
+    <!-- <el-row :gutter="24" class="count-to">
       <el-col :span="5">
         <div class="bg-cart">
           <div class="left-icon red">
@@ -48,8 +48,8 @@
     </el-row>
     <div>
       <div id="HomeCharts" style="width:100%;height:calc(100vh - 290px);"></div>
-    </div>
-    <!-- 欢迎登陆水资源管理系统 -->
+    </div>-->
+    欢迎登陆水资源管理系统
   </div>
 </template>
 
@@ -65,7 +65,7 @@ export default {
   },
   components: { countTo },
   mounted() {
-    this.initLine();
+    // this.initLine();
   },
   methods: {
     initLine() {
@@ -109,7 +109,7 @@ export default {
             "29:00",
             "30:00",
             "31:00",
-            "32:00",
+            "32:00"
           ],
           boundaryGap: false
         },
@@ -181,14 +181,14 @@ export default {
 }
 .wa-home-view {
   padding: 10px;
-  // font-size: 30px;
-  // position: relative;
-  // top: 50%;
-  // text-align: center;
-  // background-image: linear-gradient(-90deg, #3393ba 0%, #3894b9 100%);
-  // -webkit-background-clip: text;
-  // color: transparent;
-  // letter-spacing: 10px;
+  font-size: 30px;
+  position: relative;
+  top: 50%;
+  text-align: center;
+  background-image: linear-gradient(-90deg, #3393ba 0%, #3894b9 100%);
+  -webkit-background-clip: text;
+  color: transparent;
+  letter-spacing: 10px;
   .count-to {
     margin: 20px;
     & .bg-cart {

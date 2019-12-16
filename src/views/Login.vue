@@ -2,8 +2,8 @@
   <div class="loncom_login">
     <div class="loncom_login_con">
       <div class="loncom_logo_img"></div>
-      <!-- <div class="loncom_logo_text">水资源管理系统</div> -->
-      <div class="loncom_logo_text">管理系统</div>
+      <div class="loncom_logo_text">水资源管理系统</div>
+      <!-- <div class="loncom_logo_text">管理系统</div> -->
       <div class="loncom_login_input">
         <el-form ref="LoginForm" class="login-box" :model="LoginForm" :rules="rules">
           <div class="loncom_user">
@@ -62,7 +62,6 @@ export default {
               password: this.LoginForm.pwd
             })
             .then(res => {
-              this.loading = false;
               const state = {
                 2: "缺少参数",
                 3: "用户不存在",
@@ -71,6 +70,7 @@ export default {
               };
               if (res.code != 1) {
                 this.$message.error(state[res.code]);
+                this.loading = false;
               } else {
                 localStorage.setItem("Authorization", true);
                 localStorage.setItem("userInfo", JSON.stringify(res.data));

@@ -3,7 +3,7 @@
     <el-form :inline="true" :loading="loading">
       <el-form-item label>
         <el-input clearable placeholder="用户账号、姓名、联系人电话" size="small" v-model="searchForm.userNick"></el-input>
-      </el-form-item>      
+      </el-form-item>
       <el-form-item label="账号状态">
         <el-select clearable size="small" v-model="searchForm.status">
           <el-option label="正常" value="1"></el-option>
@@ -112,6 +112,31 @@
 import { menus, filterMenus } from "@/utils/sideJson";
 export default {
   data() {
+    var phoneReg = (rule, value, callback) => {
+      const reg = /^[1]([3-9])[0-9]{9}$/;
+      if (value === "") {
+        callback(new Error("请输入手机号"));
+      } else {
+        if (!reg.test(value)) {
+          callback(new Error("请输入正确的手机号"));
+        }
+        callback();
+      }
+    };
+    const newPwdValidate = (rule, value, callback) => {
+      if (
+        value.length >= 6 &&
+        value.length <= 25 &&
+        // /^(?=.*[a-zA-Z]+)(?=.*[0-9]+)[a-zA-Z0-9]+$/.test(value)
+        /(?!^[0-9]+$)(?!^[A-z]+$)(?!^[^A-z0-9]+$)^[^\s\u4e00-\u9fa5]{6,20}$/.test(
+          value
+        )
+      ) {
+        callback();
+      } else {
+        callback(new Error("密码过于简单"));
+      }
+    };
     return {
       userDialog: false,
       isAdd: true,
@@ -138,8 +163,14 @@ export default {
       rules: {
         userName: [{ required: true, message: "请输入昵称", trigger: "blur" }],
         userNick: [{ required: true, message: "请输入账号", trigger: "blur" }],
-        phone: [{ required: true, message: "请输入手机号", trigger: "blur" }],
-        password: [{ required: true, message: "请输入密码", trigger: "blur" }]
+        phone: [
+          { required: true, message: "请输入手机号", trigger: "blur" },
+          { validator: phoneReg, trigger: "blur" }
+        ],
+        password: [
+          { required: true, message: "请输入密码", trigger: "blur" },
+          { validator: newPwdValidate, trigger: "blur" }
+        ]
       }
     };
   },
@@ -177,6 +208,7 @@ export default {
             .then(res => {
               if (res.code == 1) {
                 this.initTableData();
+                this.$message.success('密码充值成功');
               } else {
                 this.$message.error(res.msg);
               }

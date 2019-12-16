@@ -100,6 +100,9 @@ export default {
     this.myGeo = new BMap.Geocoder();
     this.map.centerAndZoom(point, 15);
     this.map.enableScrollWheelZoom();
+    // setTimeout(() => {
+    //   this.searchMap();
+    // }, 5000);
   },
   watch: {
     map() {
@@ -123,7 +126,7 @@ export default {
       var lngSpan = Math.abs(sw.lng - ne.lng);
       var latSpan = Math.abs(ne.lat - sw.lat);
       const state = ["success", "warning", "error"];
-      for (var i = 0; i < 25; i++) {
+      for (var i = 0; i < 20; i++) {
         var myIcon = new BMap.Icon(
           `static/images/${
             state[Math.floor(Math.random() * state.length)]
@@ -144,7 +147,7 @@ export default {
       // this.marker.push(marker);
       var label = new BMap.Label(i);
       label.setStyle({
-        // display: "none"
+        display: "none"
       });
       marker.setLabel(label);
       this.map.addOverlay(marker); //添加到地图上
@@ -174,33 +177,37 @@ export default {
       }
     },
     searchMap() {
-      var allOverlay = this.map.getOverlays();
-      for (var i = 0; i < allOverlay.length; i++) {
-        // console.log(allOverlay[i].getLabel());
-        if (allOverlay[i].getLabel().content == this.siteName) {
-          //==>
-          var myIcon = new BMap.Icon(
-            `static/images/success.png`,
-            new BMap.Size(16, 26)
-          );
-          // var marker = new BMap.Marker(allOverlay[i].point, { icon: myIcon });
-          // var label = new BMap.Label(this.siteName);
-          // label.setStyle({
-          //   // display: "none"
-          // });
-          // marker.setLabel(label);
-          // this.map.addOverlay(marker); //添加到地图上
-          // this.addClickHandler(marker);
-          // this.marker.push(marker);
-          //==>
-          this.initMapLabel(allOverlay[i].getLabel().content, allOverlay[i].point, myIcon);
-          setTimeout(()=>{
-            this.map.removeOverlay(allOverlay[i]);
-          },200)
-          return false;
-        }
-      }
-      return;
+      // var allOverlay = this.map.getOverlays();
+      // for (var i = 0; i < allOverlay.length; i++) {
+      //   // console.log(allOverlay[i].getLabel());
+      //   if (allOverlay[i].getLabel().content == this.siteName || 1 == 1) {
+      //     //==>
+      //     var myIcon = new BMap.Icon(
+      //       `static/images/success.png`,
+      //       new BMap.Size(16, 26)
+      //     );
+      //     // var marker = new BMap.Marker(allOverlay[i].point, { icon: myIcon });
+      //     // var label = new BMap.Label(this.siteName);
+      //     // label.setStyle({
+      //     //   // display: "none"
+      //     // });
+      //     // marker.setLabel(label);
+      //     // this.map.addOverlay(marker); //添加到地图上
+      //     // this.addClickHandler(marker);
+      //     // this.marker.push(marker);
+      //     //==>
+      //     this.initMapLabel(
+      //       allOverlay[i].getLabel().content,
+      //       allOverlay[i].point,
+      //       myIcon
+      //     );
+      //     setTimeout(() => {
+      //       this.map.removeOverlay(allOverlay[i]);
+      //     }, 200);
+      //     // return false;
+      //   }
+      // }
+      // return;
       this.myGeo.getPoint(
         this.siteName,
         point => {
@@ -241,7 +248,7 @@ export default {
     height: 400px;
     position: absolute;
     left: 0;
-    bottom: -400px;
+    bottom: 0;
     transition: all 0.2s linear;
     background: #f9f9f9;
     border-bottom: 1px solid red;

@@ -52,7 +52,7 @@
         <el-table-column align="center" label="设备编号" prop="ename"></el-table-column>
         <el-table-column align="center" label="设备状态"></el-table-column>
         <el-table-column align="center" label="数据状态" prop="dateAvg"></el-table-column>
-        <el-table-column align="center" label="当日总量" prop="countDate"></el-table-column>
+        <el-table-column align="center" label="当年总量" prop="countDate"></el-table-column>
         <el-table-column align="center" label="最后采集时间" width="160" prop="lastPushTime"></el-table-column>
       </el-table>
       <el-pagination

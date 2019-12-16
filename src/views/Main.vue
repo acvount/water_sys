@@ -39,7 +39,8 @@
 <script>
 import AppNav from "@/components/common/AppNav";
 import AppHeader from "@/components/common/Header";
-import { fork } from "child_process";
+// import { fork } from "child_process";
+import { menus } from "@/utils/sideJson.js";
 export default {
   name: "app",
   data() {
@@ -73,7 +74,33 @@ export default {
           this.$router.push({ path: "/" });
         }
       }
+    },
+    userAuth() {
+      let userMenus = JSON.parse(localStorage.getItem("userInfo"));
+      if (userMenus.userType == 0) {
+        let menusArr = [];
+        JSON.parse(userMenus.userPower).forEach(item => {
+          menusArr.push(item);
+        });
+
+        let routeTo = menus.filter(element => {
+          if (element.route) {
+            return this.$route.path == element.route;
+          }
+        });
+        if (
+          menusArr.indexOf(routeTo[0].id) == -1 &&
+          this.$route.path != "/login"
+        ) {
+          this.$router.push({ path: "/" });
+          this.$store.commit("set_active_index", "/home");
+          return;
+        }
+      }
     }
+  },
+  mounted() {
+    this.userAuth();
   },
   computed: {
     options() {
@@ -90,21 +117,8 @@ export default {
   },
   watch: {
     $route(to) {
+      this.userAuth();
       let flag = false;
-      let userMenus = JSON.parse(localStorage.getItem("userInfo"));
-      if (userMenus.userType == 0) {
-        let menusArr = [];
-        JSON.parse(userMenus.userPower).forEach(item => {
-          if (item.route) {
-            menusArr.push(item.route);
-          }
-        });
-        if (menusArr.indexOf(to.path) == -1 && to.path != "/login") {
-          this.$router.push({ path: "/" });
-          this.$store.commit("set_active_index", "/home");
-          return;
-        }
-      }
       for (let option of this.options) {
         if (option.name === to.name) {
           flag = true;

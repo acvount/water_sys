@@ -61,6 +61,7 @@ const router = new Router({
 })
 
 router.beforeEach((to, from, next) => {
+  // console.log(to)
   let Auth = localStorage.getItem('Authorization');
   if (to.path == "/login") {
     Auth ? next("/") : next()

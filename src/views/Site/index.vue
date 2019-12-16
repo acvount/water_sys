@@ -127,7 +127,7 @@
         </el-row>
         <el-form-item label="站点地址">
           <el-col :span="24">
-            <el-input size="small" placeholder="详细地址" type="textarea" v-model="rowForm.siteAddress"></el-input>
+            <el-input size="small" disabled placeholder="详细地址" type="textarea" v-model="rowForm.siteAddress"></el-input>
           </el-col>
         </el-form-item>
       </el-form>

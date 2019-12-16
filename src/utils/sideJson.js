@@ -1,6 +1,6 @@
 
 export const menus = [
-    { id: 1, route: "/", name: "首页", icon: "sys", disabled: true },
+    { id: 1, route: "/home", name: "首页", icon: "sys", disabled: true },
     { id: 2, route: "/map", name: "地图展示", icon: "map" },
     { id: 3, route: "/salary", name: "实时查询", icon: "real-time" },
     { id: 4, name: "历史查询", icon: "history", },
