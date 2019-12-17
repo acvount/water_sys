@@ -33,9 +33,6 @@
           <el-table-column type="index" label="#" width="50" align="center"></el-table-column>
           <el-table-column prop="siteNo" label="站点编号" align="center"></el-table-column>
           <el-table-column prop="siteName" label="站点名称" align="center"></el-table-column>
-          <el-table-column label="设备名称" align="center">
-            <template slot-scope="scope">{{scope.row.sensor}}</template>
-          </el-table-column>
           <el-table-column label="站点状态" align="center">
             <template slot-scope="scope">{{ scope.row.siteStatus == 0?'停用':'正常' }}</template>
           </el-table-column>
@@ -51,6 +48,7 @@
                 size="small"
               >暂停</el-button>
               <el-button type="text" v-else @click="UpdateTheSite(scope.row)" size="small">激活</el-button>
+              <el-button type="text" @click="showDig(scope.row)" size="small">设备列表</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -68,6 +66,17 @@
         <site-add @initEquipment="initEquipment" :sensorList="sensorList" ref="child"></site-add>
       </el-tab-pane>
     </el-tabs>
+
+    <el-dialog title="设备列表" :visible.sync="deviceListDig" width="50%">
+      <el-table :data="deviceData" style="width: 100%">
+        <el-table-column type="index" label="#" width="50" align="center"></el-table-column>
+        <el-table-column prop="siteName" label="设备名称" align="center"></el-table-column>
+      </el-table>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="deviceListDig = false">取 消</el-button>
+        <el-button type="primary" @click="deviceListDig = false">确 定</el-button>
+      </span>
+    </el-dialog>
 
     <el-dialog :visible.sync="editDialog" width="50%">
       <span slot="title">修改</span>
@@ -127,7 +136,13 @@
         </el-row>
         <el-form-item label="站点地址">
           <el-col :span="24">
-            <el-input size="small" disabled placeholder="详细地址" type="textarea" v-model="rowForm.siteAddress"></el-input>
+            <el-input
+              size="small"
+              disabled
+              placeholder="详细地址"
+              type="textarea"
+              v-model="rowForm.siteAddress"
+            ></el-input>
           </el-col>
         </el-form-item>
       </el-form>
@@ -146,9 +161,11 @@ export default {
     return {
       sensorList: [], //设备编号
       editDialog: false,
+      deviceListDig: false, //设备列表的弹框
+      deviceData: [], //设备列表弹框数据
       activeName: "sitelist",
       loading: false,
-      tableData: [],
+      deviceData: [],
       rowForm: [],
       searchForm: {
         name: "",
@@ -158,7 +175,7 @@ export default {
         total: 0,
         pages: ""
       },
-      testData: []
+      tableData: []
     };
   },
   computed: {
@@ -175,6 +192,17 @@ export default {
     this.initEquipment();
   },
   methods: {
+    showDig(row) {
+      this.deviceListDig = true;
+      let rows = JSON.parse(JSON.stringify(row));
+      this.$request
+        .post(this.api.sys.site.getDeviceList, { siteId: rows.id })
+        .then(res => {
+          if (res.code == 1) {
+            this.deviceData = res.data;
+          }
+        });
+    },
     handleSizeChange(val) {
       this.searchForm.pageSize = val;
       this.initSiteData();

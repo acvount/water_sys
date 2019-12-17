@@ -32,9 +32,14 @@
           <el-input v-model="siteForm.data.manufacturer" size="small"></el-input>
         </el-col>
       </el-form-item>
-      <el-form-item label="经纬度" prop="longitude">
+      <el-form-item label="经度" prop="longitude">
         <el-col :span="23">
-          <el-input v-model="MapPlace" size="small" :disabled="true" placeholder="当前位置经纬度"></el-input>
+          <el-input v-model="siteForm.data.longitude" size="small" placeholder="当前位置经度"></el-input>
+        </el-col>
+      </el-form-item>
+      <el-form-item label="维度" prop="latitude">
+        <el-col :span="23">
+          <el-input v-model="siteForm.data.latitude" size="small" placeholder="当前位置纬度"></el-input>
         </el-col>
       </el-form-item>
       <!-- <el-form-item label="设备编号" prop="equipmentNo">

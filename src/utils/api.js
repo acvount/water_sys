@@ -10,7 +10,8 @@ export default {
             add: '/site/addSite',
             openSite: '/site/openTheSite',
             closeSite: '/site/closeTheSite',
-            equipment: '/equipment/getAll'
+            equipment: '/equipment/getAll',
+            getDeviceList: '/equipment/getEquipmentBySiteId'
         },
         user: {
             get: '/userAdmin/getUsers',

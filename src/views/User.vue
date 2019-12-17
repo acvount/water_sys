@@ -208,7 +208,7 @@ export default {
             .then(res => {
               if (res.code == 1) {
                 this.initTableData();
-                this.$message.success('密码充值成功');
+                this.$message.success('密码重置成功');
               } else {
                 this.$message.error(res.msg);
               }
