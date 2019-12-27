@@ -8,20 +8,25 @@
         <el-form ref="LoginForm" class="login-box" :model="LoginForm" :rules="rules">
           <div class="loncom_user">
             <el-form-item prop="user">
-              <el-input type="text" v-model="LoginForm.user" autocomplete="on"></el-input>
+              <el-input
+                type="text"
+                @keyup.enter.native="LoginFn()"
+                v-model="LoginForm.user"
+                autocomplete="on"
+              ></el-input>
             </el-form-item>
           </div>
           <div class="loncom_pass">
             <el-form-item prop="pwd">
-              <el-input type="password" v-model="LoginForm.pwd" autocomplete="on"></el-input>
+              <el-input
+                type="password"
+                @keyup.enter.native="LoginFn()"
+                v-model="LoginForm.pwd"
+                autocomplete="on"
+              ></el-input>
             </el-form-item>
           </div>
-          <el-button
-            type="primary"
-            :loading="loading"
-            @click="LoginFn()"
-            @keydown="keyLogin($event)"
-          >登录</el-button>
+          <el-button type="primary" :loading="loading" @click="LoginFn()">登录</el-button>
         </el-form>
       </div>
     </div>
@@ -45,9 +50,10 @@ export default {
       loading: false
     };
   },
-  mounted() {},
+  mounted() {
+  },
   methods: {
-    keyLogin() {
+    keyLogin(ev) {
       if (ev.keyCode == 13) {
         this.LoginFn();
       }
@@ -79,7 +85,7 @@ export default {
                 //   this.$socket.send(JSON.stringify({ router: "login" }));
                 // }
                 // this.$socket.onmessage = data => console.log(data);
-                this.$websocket.dispatch("WEBSOCKET_INIT");
+                // this.$websocket.dispatch("WEBSOCKET_INIT");
               }
             })
             .catch(err => {

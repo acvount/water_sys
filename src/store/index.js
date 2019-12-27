@@ -3,49 +3,50 @@ import Vuex from 'vuex';
 import { menus, filterMenus } from '@/utils/sideJson'
 import { stat } from 'fs';
 
-Vue.use(Vuex);  
-// const wsurl = "ws://192.168.18.4:9999/websocket"
-const wsurl = "ws://127.0.0.1:9999/websocket"
+Vue.use(Vuex);
+const wsurl = `ws://${process.env.VUE_APP_BASE_API}/websocket`
 const store = new Vuex.Store({
   state: {
     options: [],
     activeIndex: '/home',
     userInfo: {},
     side: [],
-    isCollapse:false,
+    isCollapse: false,
     websock: null
   },
   actions: {
     add_side({ commit }, userInfo) {
       commit('add_side_user', userInfo.userType)
+      if (this.state.websock == null) {
+        commit('WEBSOCKET_INIT', wsurl)
+      }
+    },
+    WEBSOCKET_INIT({ commit }) { //初始化
       commit('WEBSOCKET_INIT', wsurl)
     },
-    WEBSOCKET_INIT({ commit }, url) {
-      commit('WEBSOCKET_INIT', wsurl)
+    WEBSOCKET_DESTROY({ commit }) { //销毁
+      commit('WEBSOCKET_DESTROY')
     }
 
   },
   mutations: {
-    Edit_Collapse(state,val){
+    Edit_Collapse(state, val) {
       state.isCollapse = val;
     },
     WEBSOCKET_INIT(state, url) {
-      // this.$websocket.getters.STAFF_UPDATE.onmessage = e => {
-      //   this.testData.push(JSON.parse(e.data));
-      //   console.log(JSON.parse(e.data));
-      // };
-      // state.websock = new WebSocket(url);
       state.websock = new ReconnectingWebSocket(url);
       state.debug = true;
       state.timeoutInterval = 5400;
       state.websock.onopen = function () {
-        console.log("连接成功！");
+        console.log("-->连接成功！");
       }
       window.onbeforeunload = function () {
-        state.websock.send('游览器关闭')
-        alert("游览器关闭")
         state.websock.close();
       }
+    },
+    WEBSOCKET_DESTROY(state) {
+      console.log("-->关闭连接！");
+      state.websock.close();
     },
     add_side_user(state, role) {
       if (role == 1) {

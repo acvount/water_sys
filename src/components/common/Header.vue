@@ -4,7 +4,7 @@
       <div class="title">
         <img src="../../assets/images/logo-white.png" />
         <span>水资源智能管理云平台</span>
-        <!-- <span>后台管理系统</span> -->
+        <!-- <span>亦客测试管理系统</span> -->
       </div>
       <div class="userBox">
         <span type="primary" @click.prevent.stop="userInfoShow=!userInfoShow">

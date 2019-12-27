@@ -25,11 +25,10 @@
           </el-tabs>
         </div>
         <div class="content-wrap">
-          <transition name="fade" mode="out-in">
-            <keep-alive>
-              <router-view />
-            </keep-alive>
-          </transition>
+          <keep-alive>
+            <router-view v-if="$route.meta.keepAlive"></router-view>
+          </keep-alive>
+          <router-view v-if="!$route.meta.keepAlive"></router-view>
         </div>
       </div>
     </div>
@@ -39,7 +38,6 @@
 <script>
 import AppNav from "@/components/common/AppNav";
 import AppHeader from "@/components/common/Header";
-// import { fork } from "child_process";
 import { menus } from "@/utils/sideJson.js";
 export default {
   name: "app",
@@ -188,9 +186,12 @@ body {
       .content-wrap {
         width: 100%;
         height: calc(100vh - 120px);
-        overflow-y: auto;
+        overflow: auto;
         border: 1px solid #d1dbe5;
         border-top: none;
+        & > .el-scrollbar > .el-scrollbar__wrap {
+          overflow-x: auto;
+        }
       }
     }
   }

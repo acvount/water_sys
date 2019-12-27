@@ -49,7 +49,8 @@
     <div>
       <div id="HomeCharts" style="width:100%;height:calc(100vh - 290px);"></div>
     </div>-->
-    欢迎登陆水资源管理系统
+    欢迎登陆水资源管理系统 
+    <!-- 亦客测试管理系统-->
   </div>
 </template>
 

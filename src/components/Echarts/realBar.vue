@@ -6,7 +6,7 @@
 import echarts from "echarts";
 
 export default {
-  name: "ChartLine",
+  name: "ChartBar",
   props: {
     height: {
       type: String,
@@ -34,20 +34,7 @@ export default {
     this.init();
     this.initData();
   },
-  computed: {
-    titleConver() {
-      return function(type) {
-        switch (type) {
-          case "1":
-            return "水位高度";
-            break;
-          case "2":
-            return "流量";
-            break;
-        }
-      };
-    }
-  },
+  computed: {},
   methods: {
     // 初始化
     init() {
@@ -64,9 +51,16 @@ export default {
       if (!this.chartData) return;
       const obj = JSON.parse(JSON.stringify(this.chartData));
       let option = {
+        tooltip: {
+          trigger: "axis",
+          axisPointer: {
+            // 坐标轴指示器，坐标轴触发有效
+            type: "shadow" // 默认为直线，可选为：'line' | 'shadow'
+          }
+        },
         xAxis: {
-          data: obj.xData,
-          boundaryGap: false
+          type: "category",
+          data: obj.xData
         },
         grid: {
           left: 20,
@@ -75,36 +69,35 @@ export default {
           top: 50,
           containLabel: true
         },
-        tooltip: {
-          trigger: "axis",
-          axisPointer: {
-            type: "cross"
-          },
-          padding: [5, 10]
+        yAxis: {
+          type: "value"
         },
-        yAxis: {},
         series: [
           {
-            name: this.titleConver(this.title),
-            type: "line",
-            smooth: true,
+            name: this.title,
+            type: "bar",
+            barWidth: "8%",
             itemStyle: {
               normal: {
-                color: "#81ecec",
-                lineStyle: {
-                  color: "#81ecec",
-                  width: 2
-                },
-                areaStyle: {
-                  color: "#f3f8ff"
-                }
+                color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                  {
+                    offset: 0,
+                    color: "#16b9d2"
+                  },
+                  {
+                    offset: 1,
+                    color: "#b2dfe6"
+                  }
+                ]),
+                barBorderRadius: 11
               }
             },
-            animationDuration: 2800,
-            data: obj.yData
+            data: obj.yData,
+            type: "bar"
           }
         ]
       };
+
       this.chart.setOption(option);
     },
     // 注销echarts
@@ -123,8 +116,8 @@ export default {
     // 监听到数据改变，重新加载echarts数据
     chartData: {
       handler() {
-        this.removeChart("reset");
-        this.initData();
+        // this.removeChart("reset");
+        // this.initData();
       },
       deep: true
     }

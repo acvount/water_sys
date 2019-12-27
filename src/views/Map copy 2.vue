@@ -60,6 +60,7 @@ export default {
             `{"action":"MapQuery","message":""}`
           );
         } else {
+          console.log(msg);
           this.editSiteStatus(msg);
         }
       };
@@ -67,24 +68,46 @@ export default {
     editSiteStatus(dataJson) {
       //更改站点状态
       let allOverlay = this.map.getOverlays();
+      console.log(allOverlay)
+      return;
       allOverlay.forEach((item, index) => {
         dataJson.forEach(element => {
-          if (item.siteId == element.siteId) {
-            const state = ["success", "warning", "error"];
-            let icon = 0;
-            if (element.eStatus == "0") {
-              icon = 2;
-            } else if (element.hasAbnormalData > 0) {
-              icon = 1;
-            } else if (element.eStatus == "1") {
-              icon = 0;
-            }
+          console.log(item.getLabel())
+          if (item.getLabel().content == element.siteId) {
+            // this.map.removeOverlay(allOverlay[index]);
             var myIcon = new BMap.Icon(
-              `static/images/${state[icon]}.png`,
-              new BMap.Size(50, 50)
+              `static/images/success.png`,
+              new BMap.Size(16, 26)
             );
-            item.setIcon(myIcon);
-            item.setAnimation(BMAP_ANIMATION_BOUNCE);
+            var point = new BMap.Point(element.longitude, element.latitude);
+            var marker = new BMap.Marker(point, {
+              icon: myIcon
+            });
+            var label = new BMap.Label(element.siteId);
+            // label.setStyle({
+            //   display: "none"
+            // });
+            marker.setLabel(label);
+            this.map.addOverlay(marker); //添加到地图上
+            let _this = this;
+            // marker.addEventListener("click", function(e) {
+            //   var p = e.target;
+            //   var point = new BMap.Point(
+            //     p.getPosition().lng,
+            //     p.getPosition().lat
+            //   );
+            //   var infoWindow = new BMap.InfoWindow(item, siteName, {
+            //     width: 250, // 信息窗口宽度
+            //     height: 80, // 信息窗口高度
+            //     title: item.siteName, // 信息窗口标题
+            //     enableMessage: true //设置允许信息窗发送短息
+            //   });
+            //   _this.map.openInfoWindow(infoWindow, point);
+            // });
+
+            // setTimeout(() => {
+            //   this.map.removeOverlay(allOverlay[index]);
+            // }, 1000);
           }
         });
       });
@@ -104,10 +127,10 @@ export default {
           this.siteArr.forEach((item, index) => {
             var myIcon = new BMap.Icon(
               `static/images/success.png`,
-              new BMap.Size(50, 50)
+              new BMap.Size(16, 26)
             );
             let point = new BMap.Point(item.longitude, item.latitude);
-            this.initMapLabel(item, point, myIcon);
+            this.initMapLabel(item, point);
           });
         } else {
           this.$message.error(res.msg);
@@ -115,62 +138,51 @@ export default {
       });
     },
     initMapLabel(item, point, myIcon) {
-      item = JSON.parse(JSON.stringify(item));
       //鼠标悬浮
       var marker = new BMap.Marker(point, { icon: myIcon });
-
       var label = new BMap.Label(item.id);
-      label.setStyle({
-        display: "none"
-      });
+      // label.setStyle({
+      //   display: "none"
+      // });
       marker.setLabel(label);
-      marker.setAnimation(BMAP_ANIMATION_BOUNCE);
       this.map.addOverlay(marker); //添加到地图上
+      // this.addClickHandler(marker);
       let _this = this;
-      marker.siteId = item.id;
-      marker.siteName = item.siteName;
       marker.addEventListener("click", function(e) {
         var p = e.target;
         var point = new BMap.Point(p.getPosition().lng, p.getPosition().lat);
-        _this.$request
-          .post(_this.api.map.getDeviceList, {
-            siteId: item.id
-          })
-          .then(res => {
-            if (res.code == 1) {
-              var sContent = `<h4 style='margin:0 0 5px 0;padding:0.2em 0'>${item.siteName}</h4><div>`;
-              if (item.sitePicPath != "") {
-                sContent += `
-                 <img src="${item.sitePicPath}" width="200"  height='104' />
-                `;
-              }
-              sContent += `<table border class="map-info-table">
-                <tr>
-                <td>设备名</td>
-                <td>值</td>
-                <td>类型</td>
-                <td>数据状态</td>
-                <td>最后推送时间</td>
-                </tr>
-             `;
-              res.data.forEach(obj => {
-                sContent += `<tr>
-                  <td>${obj.name}</td>
-                  <td>${
-                    obj.lastPushValue == null ? "暂无数据" : obj.lastPushValue
-                  }</td>
-                  <td>${obj.TYPE}</td>
-                  <td>${obj.dataStatus}</td>
-                  <td>${obj.lastPushTime}</td>
-                </tr>`;
-              });
-              sContent += " </table>";
-              var infoWindow = new BMap.InfoWindow(sContent);
-              _this.map.openInfoWindow(infoWindow, point);
-            } else {
-              _this.$message.error(res.msg);
-            }
-          });
+        var infoWindow = new BMap.InfoWindow("xxxx", {
+          width: 250, // 信息窗口宽度
+          height: 80, // 信息窗口高度
+          title: item.siteName, // 信息窗口标题
+          enableMessage: true //设置允许信息窗发送短息
+        });
+        _this.map.openInfoWindow(infoWindow, point);
+      });
+    },
+    addClickHandler(marker) {
+      //点击事件
+      let _this = this;
+      marker.addEventListener("click", function(e) {
+        // let mapContent = `
+        //   <div class='mapInfo'>
+        //     <span>设备名称</span>
+        //     <div>机器状态：断电</div>
+        //     <div>设备1：shebei1</div>
+        //     <div>设备1：shebei1</div>
+        //   </div>
+        // `;
+        // var infoBox = new BMapLib.InfoBox(_this.map, mapContent);
+        // infoBox.open(marker);
+        var p = e.target;
+        var point = new BMap.Point(p.getPosition().lng, p.getPosition().lat);
+        var infoWindow = new BMap.InfoWindow("xxxx", {
+          width: 250, // 信息窗口宽度
+          height: 80, // 信息窗口高度
+          title: "信息窗口", // 信息窗口标题
+          enableMessage: true //设置允许信息窗发送短息
+        });
+        _this.map.openInfoWindow(infoWindow, point);
       });
     },
     Enter() {
@@ -182,13 +194,7 @@ export default {
       }
     },
     searchMap() {
-      let allOverlay = this.map.getOverlays();
-      allOverlay.forEach((item, index) => {
-        console.log(item.siteName);
-        if (item.siteName == this.siteName) {
-          this.map.centerAndZoom(item.point, 14);
-        }
-      });
+      this.map.centerAndZoom(this.siteName, 14);
     },
     closeAlarm: function() {
       this.$refs.wa_site_details_list.style.bottom = "-400px";
@@ -248,10 +254,5 @@ export default {
   // overflow: hidden;
   background: #ccc;
   padding: 10px;
-}
-.map-info-table {
-  padding: 2px;
-  border-collapse: collapse;
-  border-spacing: 0px 10px;
 }
 </style>

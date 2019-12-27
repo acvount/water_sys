@@ -42,12 +42,17 @@
           <el-input v-model="siteForm.data.latitude" size="small" placeholder="当前位置纬度"></el-input>
         </el-col>
       </el-form-item>
+      <!-- <el-form-item label="设备编号" prop="equipmentNo">
+        <el-col :span="23">
+          <el-input v-model="siteForm.data.equipmentNo" size="small"></el-input>
+        </el-col>
+      </el-form-item>-->
       <el-form-item label="站点地区" prop="address">
         <el-col :span="23">
           <el-cascader
             style="width:100%;"
             size="small"
-            clearable
+            clearablex
             @change="cityChange"
             :options="options"
             v-model="addressArr"
@@ -57,7 +62,12 @@
       <el-form-item label="行业" size="small" prop="tag">
         <el-col :span="23">
           <el-select style="width:100%;" clearable v-model="siteForm.data.tag" placeholder="请选择行业">
-            <el-option v-for="(item,index) in tag" :label="item.name" :value="item.id" :key="index"></el-option>
+            <el-option
+              v-for="(item,index) in tag"
+              :label="item.label"
+              :value="item.value"
+              :key="index"
+            ></el-option>
           </el-select>
         </el-col>
       </el-form-item>
@@ -71,21 +81,23 @@
           ></el-input>
         </el-col>
       </el-form-item>
-      <el-form-item label="站点地址">
+      <!-- <el-form-item label="传感器" size="small" prop="equipmentNo">
         <el-col :span="23">
-          <el-upload
-            class="avatar-uploader"
-            action
-            :show-file-list="false"
-            :on-success="handleAvatarSuccess"
-            :before-upload="beforeAvatarUpload"
-            :http-request="uploadSectionFile"
+          <el-select
+            style="width:100%;"
+            clearable
+            v-model="siteForm.data.equipmentNo"
+            placeholder="请选择传感器"
           >
-            <img v-if="siteForm.data.sitPicPath" :src="siteForm.data.sitPicPath" class="avatar" />
-            <i v-else class="el-icon-plus avatar-uploader-icon"></i>
-          </el-upload>
+            <el-option
+              v-for="(item,index) in sensorList"
+              :label="item.label"
+              :value="item.value"
+              :key="index"
+            ></el-option>
+          </el-select>
         </el-col>
-      </el-form-item>
+      </el-form-item>-->
       <el-form-item>
         <el-button type="primary" size="small" @click="submitForm()" :loading="loading">保存站点</el-button>
         <el-button size="small" @click="resetForm()">重置</el-button>
@@ -110,14 +122,13 @@ import { regionData, CodeToText } from "element-china-area-data";
 export default {
   data() {
     return {
-      uploadImgAction: this.api.uploadImg, //图片上传地址
       loading: false,
       options: regionData,
       siteAddMap: "", //当前地图对象
       siteAddGeo: "", //根据位置找经纬度对象
       searchVal: "",
       addressArr: [],
-      tag: [], //行业
+      tag: [{ label: "程序员", value: 1 }], //行业
       map: "", //地图对象
       siteForm: {
         data: {
@@ -131,8 +142,7 @@ export default {
           // equipmentNo: "", //设备编号
           siteAddress: "", //站点地址
           address: "", //地区三级
-          tag: "", //行业
-          sitPicPath: ""
+          tag: "" //行业
         },
         rules: {
           siteName: [
@@ -166,10 +176,10 @@ export default {
             { required: true, message: "请选择一个行业", trigger: "change" }
           ]
         }
-      },
-      fileReader: ""
+      }
     };
   },
+  props: ["sensorList"],
   computed: {
     //经纬度
     MapPlace() {
@@ -177,33 +187,6 @@ export default {
     }
   },
   methods: {
-    uploadSectionFile(options) {
-      let fileReader = new FileReader();
-      let file = options.file;
-      let filename = file.name;
-      if (file) {
-        fileReader.readAsDataURL(file);
-      }
-      const isJPG = file.type === "image/jpeg";
-      const isPNG = file.type === "image/png";
-      if (!isJPG && !isPNG) {
-        this.$message.error("请上传正确的图片格式");
-        return;
-      }
-      let formData = new FormData();
-      formData.append("file", options.file);
-      let config = {
-        "Content-Type": "multipart/form-data"
-      };
-      this.$request.post(this.api.uploadImg, formData, config).then(res => {
-        this.siteForm.data.sitPicPath = res;
-      });
-    },
-    handleAvatarSuccess(res, file) {
-      console.log(res);
-      console.log(file);
-    },
-    beforeAvatarUpload(options) {},
     resetForm() {
       this.$refs["siteForm"].resetFields();
       this.siteForm.data.siteAddress = "";
@@ -212,7 +195,6 @@ export default {
       this.addressArr = [];
       // this.map.clearOverlays();
       this.searchVal = "";
-      this.siteForm.data.sitPicPath = "";
     },
     submitForm() {
       this.$refs["siteForm"].validate(valid => {
@@ -241,6 +223,7 @@ export default {
         CodeToText[this.addressArr[1]]
       }/${CodeToText[this.addressArr[2]]}`;
     },
+
     initMap() {
       var _this = this;
       this.map = new BMap.Map("siteAddMap", { enableMapClick: false });
@@ -257,8 +240,8 @@ export default {
       map.setMapStyle({ styleJson: myStyleJson });
       var myGeo = new BMap.Geocoder();
       var point = new BMap.Point(114.097483, 32.153015);
+      this.map.centerAndZoom(point, 8);
       moveOverlay(point);
-      this.map.centerAndZoom("河南省信阳市", 8);
       map.enableScrollWheelZoom(); //启用滚轮放大缩小，默认禁用
       map.enableContinuousZoom(); //启用地图惯性拖拽，默认禁用
       $("#search").on("click", function() {
@@ -289,20 +272,10 @@ export default {
           _this.siteForm.data.longitude = e.point.lng;
         });
       }
-    },
-    initTag() {
-      this.$request.post(this.api.sys.site.getTag).then(res => {
-        if (res.code == 1) {
-          this.tag = res.data;
-        } else {
-          this.$message.error(res.msg);
-        }
-      });
     }
   },
   mounted() {
-    // this.initMap();;
-    this.initTag();
+    this.initMap();
   }
 };
 </script>
@@ -313,7 +286,6 @@ export default {
   .site-add-form {
     width: 30%;
     box-sizing: border-box;
-    height: 100%;
   }
   .wa-site-add-map {
     width: 70%;
@@ -331,29 +303,6 @@ export default {
       width: 100%;
       height: 100%;
     }
-  }
-  .avatar-uploader .el-upload {
-    border: 1px dashed #d9d9d9;
-    border-radius: 6px;
-    cursor: pointer;
-    position: relative;
-    overflow: hidden;
-  }
-  .avatar-uploader .el-upload:hover {
-    border-color: #409eff;
-  }
-  .avatar-uploader-icon {
-    font-size: 28px;
-    color: #8c939d;
-    width: 100px;
-    height: 100px;
-    line-height: 100px;
-    text-align: center;
-  }
-  .avatar {
-    width: 100px;
-    height: 100px;
-    display: block;
   }
 }
 </style>

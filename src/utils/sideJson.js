@@ -2,7 +2,7 @@
 export const menus = [
     { id: 1, route: "/home", name: "首页", icon: "sys", disabled: true },
     { id: 2, route: "/map", name: "地图展示", icon: "map" },
-    { id: 3, route: "/salary", name: "实时查询", icon: "real-time" },
+    { id: 3, route: "/real-time", name: "实时查询", icon: "real-time" },
     { id: 4, name: "历史查询", icon: "history", },
     { id: 5, pid: 4, route: "/dayHis", name: "按天查询", },
     { id: 6, pid: 4, route: "/mouthHis", name: "按月查询", },

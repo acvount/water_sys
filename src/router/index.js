@@ -20,37 +20,67 @@ const router = new Router({
           path: '/home',
           name: '首页',
           component: () => import("@/views/Home"),
-        },
-        {
-          path: '/dayHis',
-          name: '按天查询',
-          component: () => import("@/views/History/day.vue"),
-        },
-        {
-          path: '/mouthHis',
-          name: '按月查寻',
-          component: () => import("@/views/History/month.vue"),
-        },
-        {
-          path: '/yearHis',
-          name: '按年查寻',
-          component: () => import("@/views/History/year.vue"),
-        },
-        {
-          path: '/site',
-          name: '站点管理',
-          component: () => import("@/views/Site/index"),
-        },
-        {
-          path: '/user',
-          name: '用户管理',
-          component: () => import("@/views/User"),
+          meta: {
+            keepAlive: true
+          }
         },
         {
           path: '/map',
           name: '地图',
           component: () => import("@/views/Map"),
+          meta: {
+            keepAlive: false
+          }
         },
+        {
+          path: '/real-time',
+          name: '实时数据',
+          component: () => import("@/views/real-time"),
+          meta: {
+            keepAlive: false
+          }
+        },
+        {
+          path: '/dayHis',
+          name: '按天查询',
+          component: () => import("@/views/History/day.vue"),
+          meta: {
+            keepAlive: true
+          }
+        },
+        {
+          path: '/mouthHis',
+          name: '按月查寻',
+          component: () => import("@/views/History/month.vue"),
+          meta: {
+            keepAlive: true
+          }
+        },
+        {
+          path: '/yearHis',
+          name: '按年查寻',
+          component: () => import("@/views/History/year.vue"),
+          meta: {
+            keepAlive: true
+          }
+        },
+        {
+          path: '/site',
+          name: '站点管理',
+          component: () => import("@/views/Site/index"),
+          meta: {
+            keepAlive: true
+          }
+        },
+        {
+          path: '/user',
+          name: '用户管理',
+          component: () => import("@/views/User"),
+          meta: {
+            keepAlive: true
+          }
+        },
+
       ]
     },
     {
@@ -61,7 +91,6 @@ const router = new Router({
 })
 
 router.beforeEach((to, from, next) => {
-  // console.log(to)
   let Auth = localStorage.getItem('Authorization');
   if (to.path == "/login") {
     Auth ? next("/") : next()

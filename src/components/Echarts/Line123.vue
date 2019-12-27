@@ -105,7 +105,63 @@ export default {
           }
         ]
       };
-      this.chart.setOption(option);
+      // this.chart.setOption(option);
+      let x = [];
+      let y = [];
+      let num = 0;
+      this.$websocket.getters.STAFF_UPDATE.onmessage = e => {
+        let json = JSON.parse(e.data);
+        x.push(this.moment().format("MM-DD HH:mm:ss"));
+        num++;
+        y.push(json.shebei1);
+        console.log(x.length)
+        if (x.length >= 20) {
+          x.shift(1);
+          y.shift(1);
+        }
+        this.chart.setOption({
+          xAxis: {
+            data: x,
+            boundaryGap: false
+          },
+          grid: {
+            left: 20,
+            right: 40,
+            bottom: 20,
+            top: 50,
+            containLabel: true
+          },
+          tooltip: {
+            trigger: "axis",
+            axisPointer: {
+              type: "cross"
+            },
+            padding: [5, 10]
+          },
+          yAxis: {},
+          series: [
+            {
+              name: this.titleConver(this.title),
+              type: "line",
+              smooth: true,
+              itemStyle: {
+                normal: {
+                  color: "#81ecec",
+                  lineStyle: {
+                    color: "#81ecec",
+                    width: 2
+                  },
+                  areaStyle: {
+                    color: "#f3f8ff"
+                  }
+                }
+              },
+              animationDuration: 2800,
+              data: y
+            }
+          ]
+        });
+      };
     },
     // 注销echarts
     removeChart(type) {
@@ -121,12 +177,9 @@ export default {
   },
   watch: {
     // 监听到数据改变，重新加载echarts数据
-    chartData: {
-      handler() {
-        this.removeChart("reset");
-        this.initData();
-      },
-      deep: true
+    chartData(val) {
+      this.removeChart("reset");
+      this.initData();
     }
   }
 };

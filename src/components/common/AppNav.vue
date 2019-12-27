@@ -61,9 +61,9 @@ export default {
       }
     }
   },
-  watch:{
-    isCollapse(newval,oldval){
-      this.$store.commit('Edit_Collapse',newval)
+  watch: {
+    isCollapse(newval, oldval) {
+      this.$store.commit("Edit_Collapse", newval);
     }
   },
   computed: {

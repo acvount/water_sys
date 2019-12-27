@@ -12,6 +12,9 @@ export default {
       type: String,
       default: "calc(100vh - 450px)"
     },
+    height: {
+      type: String
+    },
     width: {
       type: String,
       default: "100%"
@@ -21,6 +24,10 @@ export default {
     },
     // 标题
     title: {
+      type: String,
+      default: ""
+    },
+    deviceName: {
       type: String,
       default: ""
     }
@@ -85,7 +92,7 @@ export default {
         yAxis: {},
         series: [
           {
-            name: this.titleConver(this.title),
+            name: this.title,
             type: "line",
             smooth: true,
             itemStyle: {
@@ -106,7 +113,7 @@ export default {
         ]
       };
       this.chart.setOption(option);
-    },
+     },
     // 注销echarts
     removeChart(type) {
       if (!this.chart) {
@@ -123,7 +130,7 @@ export default {
     // 监听到数据改变，重新加载echarts数据
     chartData: {
       handler() {
-        this.removeChart("reset");
+        // this.removeChart("reset");
         this.initData();
       },
       deep: true

@@ -48,7 +48,7 @@
                 size="small"
               >暂停</el-button>
               <el-button type="text" v-else @click="UpdateTheSite(scope.row)" size="small">激活</el-button>
-              <el-button type="text" @click="showDig(scope.row)" size="small">设备列表</el-button>
+              <el-button type="text" @click="deviceDig(scope.row)" size="small">设备管理</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -63,15 +63,49 @@
         ></el-pagination>
       </el-tab-pane>
       <el-tab-pane label="站点添加" name="siteadd">
-        <site-add @initEquipment="initEquipment" :sensorList="sensorList" ref="child"></site-add>
+        <site-add ref="child"></site-add>
       </el-tab-pane>
     </el-tabs>
 
-    <el-dialog title="设备列表" :visible.sync="deviceListDig" width="50%">
-      <el-table :data="deviceData" style="width: 100%">
+    <el-dialog
+      :visible.sync="deviceListDig"
+      width="50%"
+      @close="clearDeviceList()"
+      :close-on-click-modal="false"
+      :close-on-press-escape="false"
+    >
+      <span slot="title">
+        设备列表【
+        <span style="color:red">{{deviceRow.siteName}}</span>
+        】
+      </span>
+      <el-select v-model="bindFrom.equipment" multiple collapse-tags size="mini">
+        <el-option
+          v-for="(item,index) in sensorList"
+          :key="index"
+          :label="item.label"
+          :value="item.value"
+        ></el-option>
+      </el-select>
+      <el-button style="margin-left: 20px;" size="mini" @click="bindBtn()" type="primary">绑定设备</el-button>
+      <el-table v-loading="loading1" :data="deviceData" style="width: 100%">
         <el-table-column type="index" label="#" width="50" align="center"></el-table-column>
-        <el-table-column prop="siteName" label="设备名称" align="center"></el-table-column>
+        <el-table-column prop="name" label="设备名称" align="center"></el-table-column>
+        <el-table-column label="类型" align="center">
+          <template
+            slot-scope="scope"
+          >{{scope.row.type == '1'?'高度':scope.row.type == '2'?'流速':'未知'}}</template>
+        </el-table-column>
       </el-table>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="deviceListDig = false">取 消</el-button>
+        <el-button type="primary" @click="deviceListDig = false">确 定</el-button>
+      </span>
+    </el-dialog>
+
+    <el-dialog title="设备绑定" :visible.sync="deviceAddDig" width="50%">
+      <span>当前站点：{{deviceRow.siteName}}</span>
+
       <span slot="footer" class="dialog-footer">
         <el-button @click="deviceListDig = false">取 消</el-button>
         <el-button type="primary" @click="deviceListDig = false">确 定</el-button>
@@ -118,19 +152,14 @@
           </el-col>
         </el-row>
         <el-row>
-          <!-- <el-col :span="12">
-            <el-form-item label="设备编号">
-              <el-input disabled v-model="rowForm.equipmentNo" size="small"></el-input>
-            </el-form-item>
-          </el-col>-->
           <el-col :span="12">
             <el-form-item label="站点地区">
               <el-input disabled v-model="rowForm.address" size="small"></el-input>
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="传感器" size="small">
-              <el-input disabled v-model="rowForm.sensor" size="small"></el-input>
+            <el-form-item label="行业">
+              <el-input disabled v-model="rowForm.siteTagName" size="small"></el-input>
             </el-form-item>
           </el-col>
         </el-row>
@@ -159,13 +188,23 @@ import SiteAdd from "@/views/Site/add.vue";
 export default {
   data() {
     return {
-      sensorList: [], //设备编号
+      sensorList: [], //可用设备列表
+      deviceType: [
+        { label: "高度", value: "1" },
+        { label: "流速", value: "2" },
+        { label: "未知", value: "0" }
+      ], //设备类型
       editDialog: false,
       deviceListDig: false, //设备列表的弹框
+      deviceAddDig: false, //添加设备
+      deviceRow: "", //弹框的站点
       deviceData: [], //设备列表弹框数据
+      bindFrom: {
+        equipment: []
+      },
       activeName: "sitelist",
       loading: false,
-      deviceData: [],
+      loading1: false,
       rowForm: [],
       searchForm: {
         name: "",
@@ -189,18 +228,52 @@ export default {
   },
   mounted() {
     this.initSiteData();
-    this.initEquipment();
   },
   methods: {
-    showDig(row) {
+    clearDeviceList() {
+      //清空设备列表弹框
+      this.bindFrom.equipment = [];
+    },
+    bindBtn() {
+      if (this.bindFrom.equipment.length == 0) {
+        this.$message.warning("请先选择设备");
+      } else {
+        this.$request
+          .post(this.api.sys.site.bindEquipment, {
+            siteId: this.deviceRow.id,
+            siteName: this.deviceRow.siteName,
+            id: this.bindFrom.equipment
+          })
+          .then(res => {
+            if (res.code == 1) {
+              this.bindFrom.equipment = [];
+              this.initEquipment();
+              this.initDeviceList();
+            } else {
+              this.$message.error(res.msg);
+            }
+          });
+      }
+    },
+    deviceDig(row) {
+      //设备列表弹框
+      this.loading1 = true;
+      this.deviceRow = JSON.parse(JSON.stringify(row));
+      this.initEquipment();
+      this.initDeviceList(); //初始化站点下的设备列表
       this.deviceListDig = true;
-      let rows = JSON.parse(JSON.stringify(row));
+    },
+    initDeviceList() {
       this.$request
-        .post(this.api.sys.site.getDeviceList, { siteId: rows.id })
+        .post(this.api.sys.site.getDeviceList, { siteId: this.deviceRow.id })
         .then(res => {
           if (res.code == 1) {
             this.deviceData = res.data;
           }
+          this.loading1 = false;
+        })
+        .catch(err => {
+          this.loading1 = false;
         });
     },
     handleSizeChange(val) {
@@ -214,6 +287,7 @@ export default {
     tabClick(tab, event) {
       if (tab.name == "siteadd") {
         this.$refs.child.resetForm();
+        this.$refs.child.initMap();
       } else {
         this.initSiteData();
       }
@@ -271,12 +345,12 @@ export default {
       });
     },
     initEquipment() {
-      this.sensorList = [];
       //设备编号
       this.$request.post(this.api.sys.site.equipment).then(res => {
         if (res.code == 1) {
+          this.sensorList = [];
           res.data.forEach(element => {
-            this.sensorList.push({ label: element.sname, value: element.id });
+            this.sensorList.push({ label: element.name, value: element.id });
           });
         } else {
           this.$message.error("查询失败");
