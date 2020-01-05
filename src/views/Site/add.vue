@@ -71,7 +71,7 @@
           ></el-input>
         </el-col>
       </el-form-item>
-      <el-form-item label="站点地址">
+      <el-form-item label="站点图片">
         <el-col :span="23">
           <el-upload
             class="avatar-uploader"

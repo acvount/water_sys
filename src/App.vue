@@ -29,10 +29,13 @@ body {
   width: 100%;
   font-family: "Microsoft Yahei", "宋体", "Helvetica Neue", "Helvetica",
     "Hiragino Sans GB", "WenQuanYi Micro Hei", "sans-serif";
-  font-size: 14px;
+  font-size: 16px;
   height: 100%;
   overflow: hidden;
   color: #666;
+}
+div {
+  font-size: 16px;
 }
 #app {
   font-family: "Avenir", Helvetica, Arial, sans-serif;
@@ -43,7 +46,7 @@ body {
   display: flex;
   flex-flow: column;
 }
-.el-message{
+.el-message {
   top: 40px !important;
 }
 </style>

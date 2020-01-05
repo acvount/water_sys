@@ -17,7 +17,7 @@
             @tab-remove="tabRemove"
           >
             <el-tab-pane
-              :key="index"
+              :key="index+item.name"
               v-for="(item, index) in options"
               :label="item.name"
               :name="item.route"

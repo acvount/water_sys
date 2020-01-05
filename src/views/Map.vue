@@ -141,18 +141,21 @@ export default {
               var sContent = `<h4 style='margin:0 0 5px 0;padding:0.2em 0'>${item.siteName}</h4><div>`;
               if (item.sitePicPath != "") {
                 sContent += `
-                 <img src="${item.sitePicPath}" width="200"  height='104' />
+                 <img src="${item.sitePicPath}" width="200"  height='104' style="vertical-align: bottom;"/>
+                 <button class="jump-shishi-btn" id="shishiBtn" >实时数据</button>
                 `;
               }
-              sContent += `<table border class="map-info-table">
-                <tr>
-                <td>设备名</td>
-                <td>值</td>
-                <td>类型</td>
-                <td>数据状态</td>
-                <td>最后推送时间</td>
-                </tr>
-             `;
+              if (res.data.length != 0) {
+                sContent += `<table border class="map-info-table" style="margin-top:5px;">
+                  <tr>
+                  <td>设备名</td>
+                  <td>值</td>
+                  <td style="width:37px;">类型</td>
+                  <td>数据状态</td>
+                  <td>最后推送时间</td>
+                  </tr>
+               `;
+              }
               res.data.forEach(obj => {
                 sContent += `<tr>
                   <td>${obj.name}</td>
@@ -164,8 +167,20 @@ export default {
                   <td>${obj.lastPushTime}</td>
                 </tr>`;
               });
-              sContent += " </table>";
+              if (res.data.length != 0) {
+                sContent += " </table>";
+              }
               var infoWindow = new BMap.InfoWindow(sContent);
+              if (!infoWindow.isOpen()) {
+                infoWindow.addEventListener("open", function(e) {
+                  document.getElementById("shishiBtn").onclick = function() {
+                    _this.$router.push({
+                      path: "/real-time",
+                      query: { siteId: item.siteName }
+                    });
+                  };
+                });
+              }
               _this.map.openInfoWindow(infoWindow, point);
             } else {
               _this.$message.error(res.msg);
@@ -173,6 +188,7 @@ export default {
           });
       });
     },
+
     Enter() {
       this.searchMap();
     },
@@ -253,5 +269,33 @@ export default {
   padding: 2px;
   border-collapse: collapse;
   border-spacing: 0px 10px;
+  td {
+    text-align: center;
+  }
+}
+
+.jump-shishi-btn {
+  cursor: pointer;
+  // color: #fff;
+  // background-color: #409eff;
+  // border-color: #409eff;
+  // display: inline-block;
+  // line-height: 1;
+  // white-space: nowrap;
+  // cursor: pointer;
+  // border: 1px solid #dcdfe6;
+  // -webkit-appearance: none;
+  // text-align: center;
+  // box-sizing: border-box;
+  // outline: none;
+  // margin: 0;
+  // transition: 0.1s;
+  // font-weight: 500;
+  // -moz-user-select: none;
+  // -webkit-user-select: none;
+  // -ms-user-select: none;
+  // padding: 12px 20px;
+  // font-size: 14px;
+  // border-radius: 4px;
 }
 </style>

@@ -173,7 +173,7 @@
         <el-table-column label="违反时间" width="180">
           <template slot-scope="scope">{{formatTime(scope.row.createTime)}}</template>
         </el-table-column>
-        <el-table-column label="操作">
+        <el-table-column label="操作" width="100">
           <template slot-scope="scope">
             <el-button
               type="text"
@@ -293,7 +293,7 @@ export default {
         let charJson = { xData: [], yData: [] };
         data.forEach(element => {
           charJson.xData.push(element.strTime);
-          charJson.yData.push(element.value);
+          charJson.yData.push(element.value.toFixed(2));
         });
         return charJson;
       };
@@ -344,6 +344,7 @@ export default {
         type == "one" ? { id: row.id } : { eName: this.errorRecordForm.eName };
       this.$request.post(api, param).then(res => {
         if (res.code == 1) {
+          this.$message.success("操作成功");
           this.QueryErrorData();
         } else {
           this.$message.error(res.msg);
@@ -356,6 +357,7 @@ export default {
         type == "one" ? { id: row.id } : { eName: this.errorRecordForm.eName };
       this.$request.post(api, param).then(res => {
         if (res.code == 1) {
+          this.$message.success("操作成功");
           this.QueryErrorData();
         } else {
           this.$message.error(res.msg);
@@ -530,6 +532,12 @@ export default {
         .then(res => {
           if (res.code == 1) {
             this.siteOption = res.data;
+            if (res.data.length != 0) {
+              if (this.$route.query.siteId) {
+                //从地图页面跳来
+                this.siteId = this.$route.query.siteId;
+              }
+            }
           } else {
             this.$message.error("站点查询异常");
           }
