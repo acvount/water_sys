@@ -1,7 +1,7 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
 import { menus, filterMenus } from '@/utils/sideJson'
-import { stat } from 'fs';
+import request from '@/utils/request'
 
 Vue.use(Vuex);
 const wsurl = `ws://${process.env.VUE_APP_BASE_API}/websocket`
@@ -26,8 +26,7 @@ const store = new Vuex.Store({
     },
     WEBSOCKET_DESTROY({ commit }) { //销毁
       commit('WEBSOCKET_DESTROY')
-    }
-
+    },
   },
   mutations: {
     Edit_Collapse(state, val) {

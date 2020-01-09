@@ -104,7 +104,7 @@
                 <div
                   v-if="element.name==item.name"
                   class="data-chart-label"
-                >年度总量：{{element.yearCountData}}</div>
+                >年度总量：{{element.yearCountData.toFixed(2)}}</div>
                 <div
                   v-if="element.name==item.name"
                   class="data-chart-label"
@@ -126,7 +126,14 @@
 
     <el-dialog title="短信告知" :visible.sync="msgDigVisible" width="40%" :close-on-click-modal="false">
       <div style="display: flex;justify-content: space-between;margin:10px 0;">
-        <el-select style="width:48%;" size="small" v-model="deviceVal" placeholder="请选择设备">
+        <el-select
+          style="width:48%;"
+          size="small"
+          v-model="deviceVal"
+          collapse-tags
+          multiple
+          placeholder="请选择设备"
+        >
           <el-option
             v-for="(item,index) in DeviceOption"
             :key="index"
@@ -148,7 +155,7 @@
       <div>
         位于【
         <span class="color-red">{{siteId}}</span>】的【
-        <span class="color-red">{{converName(deviceVal,DeviceOption,'name')}}</span>】设备情况为【
+        <span class="color-red">{{converBadDevice(deviceVal,DeviceOption)}}</span>】设备情况为【
         <span class="color-red">{{deviceStatus}}</span>】，请至现场排查。
       </div>
       <span v-if="siteId == ''" class="color-red">请先选择一个站点</span>
@@ -309,6 +316,19 @@ export default {
           return arr[0][type];
         }
       };
+    },
+    converBadDevice() {
+      return function(val, option) {
+        let arr = "";
+        option.forEach(item => {
+          val.forEach(element => {
+            if (item.id == element) {
+              arr += item.name + "、";
+            }
+          });
+        });
+        return arr != "" ? arr.substring(0, arr.length - 1) : "";
+      };
     }
   },
   methods: {
@@ -413,12 +433,13 @@ export default {
         .then(res => {
           this.$request
             .post(this.api.real.sendMsg, {
+              siteName: this.siteId,
               number: this.converName(
                 this.deviceUserVal,
                 this.DeviceUserOption,
                 "phone"
               ),
-              eName: this.converName(this.deviceVal, this.DeviceOption, "name"),
+              eName: this.converBadDevice(this.deviceVal, this.DeviceOption),
               status: this.deviceStatus
             })
             .then(res => {
@@ -448,10 +469,14 @@ export default {
     initDevice(siteId) {
       //初始化发短信设备列表
       this.$request
-        .post(this.api.sys.site.getDeviceList, { siteId: siteId })
+        .post(this.api.sys.site.badEquipments, { siteId: siteId })
         .then(res => {
           if (res.code == 1) {
             this.DeviceOption = res.data;
+            this.deviceVal = [];
+            res.data.forEach(element => {
+              this.deviceVal.push(element.id);
+            });
           } else {
             this.$message.error(res.msg);
           }

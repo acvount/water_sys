@@ -1,5 +1,6 @@
 export default {
     login: '/login',
+    isLogin:'/isLogin',
     user: {
         pwdUpdate: '/user/updPassword'
     },
@@ -12,6 +13,7 @@ export default {
             closeSite: '/site/closeTheSite',
             equipment: '/equipment/getAll', //获取所有未绑定的设备列表
             getDeviceList: '/equipment/getEquipmentBySiteId', //获取站点的设备列表 需要站点id
+            badEquipments: '/equipment/badEquipments', //获取站点的设备列表 需要站点id  （设备坏的）
             bindEquipment: '/equipment/bindEquipment',//获取站点的设备列表 
             getTag: '/industry/getAll'
         },

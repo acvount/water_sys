@@ -90,7 +90,7 @@ const router = new Router({
   ]
 })
 
-router.beforeEach((to, from, next) => {
+router.beforeEach(async (to, from, next) => {
   let Auth = localStorage.getItem('Authorization');
   if (to.path == "/login") {
     Auth ? next("/") : next()

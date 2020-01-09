@@ -138,11 +138,11 @@ export default {
           })
           .then(res => {
             if (res.code == 1) {
-              var sContent = `<h4 style='margin:0 0 5px 0;padding:0.2em 0'>${item.siteName}</h4><div>`;
+              var sContent = `<h4 style='margin:0 0 5px 0;padding:0.2em 0'>${item.siteName}</h4>`;
               if (item.sitePicPath != "") {
                 sContent += `
-                 <img src="${item.sitePicPath}" width="200"  height='104' style="vertical-align: bottom;"/>
-                 <button class="jump-shishi-btn" id="shishiBtn" >实时数据</button>
+                 <div style="min-width:305px;"><img src="${item.sitePicPath}" width="200"  height='104' style="vertical-align: bottom;"/>
+                 <button class="jump-shishi-btn" id="shishiBtn" >实时数据</button></div>
                 `;
               }
               if (res.data.length != 0) {
@@ -276,26 +276,26 @@ export default {
 
 .jump-shishi-btn {
   cursor: pointer;
-  // color: #fff;
-  // background-color: #409eff;
-  // border-color: #409eff;
-  // display: inline-block;
-  // line-height: 1;
-  // white-space: nowrap;
-  // cursor: pointer;
-  // border: 1px solid #dcdfe6;
-  // -webkit-appearance: none;
-  // text-align: center;
-  // box-sizing: border-box;
-  // outline: none;
-  // margin: 0;
-  // transition: 0.1s;
-  // font-weight: 500;
-  // -moz-user-select: none;
-  // -webkit-user-select: none;
-  // -ms-user-select: none;
-  // padding: 12px 20px;
-  // font-size: 14px;
-  // border-radius: 4px;
+  color: #fff;
+  background-color: #409eff;
+  border-color: #409eff;
+  display: inline-block;
+  line-height: 1;
+  white-space: nowrap;
+  cursor: pointer;
+  border: 1px solid #dcdfe6;
+  -webkit-appearance: none;
+  text-align: center;
+  box-sizing: border-box;
+  outline: none;
+  margin: 0;
+  transition: 0.1s;
+  font-weight: 500;
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  padding: 12px 20px;
+  font-size: 14px;
+  border-radius: 4px;
 }
 </style>
