@@ -51,11 +51,11 @@ export default {
     };
   },
   mounted() {
-    // var myCity = new BMap.LocalCity();
-    // myCity.get((result)=>{
-    //   var cityName = result.name;
-		//  alert("当前定位城市:"+cityName);
-    // });
+    var myCity = new BMap.LocalCity();
+    myCity.get((result)=>{
+      var cityName = result.name;
+		 alert("当前定位城市:"+cityName);
+    });
   },
   methods: {
     keyLogin(ev) {
